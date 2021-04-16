@@ -1,0 +1,23 @@
+{
+  "name": "Table of Equaly Weighted Numbers",
+  "type": "items",
+  "total-weight": 4,
+  "rows": [
+    {
+      "weight": 1,
+      "name": "one"
+    },
+    {
+      "weight": 1,
+      "name": "two"
+    },
+    {
+      "weight": 1,
+      "name": "three"
+    },
+    {
+      "weight": 1,
+      "name": "four"
+    }
+  ]
+}

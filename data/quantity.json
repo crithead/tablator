@@ -1,0 +1,57 @@
+{
+  "name": "Quantity Test Table",
+  "type": "items",
+  "total-weight": 10,
+  "rows": [
+    {
+      "weight": 1,
+      "name": "the number one",
+      "quantity": "1"
+    },
+    {
+      "weight": 1,
+      "name": "single digit",
+      "quantity": "5"
+    },
+    {
+      "weight": 1,
+      "name": "five ten-sided Dice",
+      "quantity": "5D10"
+    },
+    {
+      "weight": 1,
+      "name": "double digit",
+      "quantity": "20"
+    },
+    {
+      "weight": 1,
+      "name": "three six-sided dice",
+      "quantity": "3d6"
+    },
+    {
+      "weight": 1,
+      "name": "two six-sided dice plus six",
+      "quantity": "2d6+6"
+    },
+    {
+      "weight": 1,
+      "name": "two four-sided dice times 100",
+      "quantity": "2d4x100"
+    },
+    {
+      "weight": 1,
+      "name": "one four-sided die minus one times ten",
+      "quantity": "1d4-1x10"
+    },
+    {
+      "weight": 1,
+      "name": "ten ten-sided dice",
+      "quantity": "10d10"
+    },
+    {
+      "weight": 1,
+      "name": "one six-sided die minus one",
+      "quantity": "1d6-1"
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "name": "Example Table List Table",
+  "type": "table-list",
+  "columns": [
+    {
+      "name": "red",
+      "chance": 75,
+      "table": null,
+      "quantity": "2d6-2"
+    },
+    {
+      "name": "green",
+      "chance": 75,
+      "table": null,
+      "quantity": "1d10"
+    },
+    {
+      "name": "blue",
+      "chance": 75,
+      "table": null,
+      "quantity": "2d4+2"
+    },
+    {
+      "name": "cyan",
+      "chance": 45,
+      "table": "example-items",
+      "quantity": "1d6"
+    },
+    {
+      "name": "magenta",
+      "chance": 55,
+      "table": "example-items",
+      "quantity": "1d2x10"
+    },
+    {
+      "name": "yellow",
+      "chance": 50,
+      "table": "example-tables",
+      "quantity": "1"
+    }
+  ]
+}
