@@ -222,3 +222,9 @@ python3 setup.py --install --user
 python3 -c 'import tablator'                            # verify
 ```
 
+## Build the man page
+
+```
+pandoc --standalone -t man -o data/tablator.1 tablator.1.md
+man -l data/tablator.1
+```
