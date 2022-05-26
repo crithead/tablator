@@ -31,7 +31,7 @@ that are set by the command line arguments.  Setting on the command file
 override the values in the configuration file.  The following files are used,
 in this order, to set configuration defaults.
 
-- `~/..ttrc`
+- `~/.ttrc`
 - `./.ttrc`
 - --config _FILE_
 
@@ -57,12 +57,13 @@ _table_list_ table. Each is described in more detail below.
 ### The DATA_DIR
 
 Every table is a JSON or YAML formatted file found in the data directory.
-For example, if the command `python3 treasure-table.py potions` is entered,
+For example, if the command `python3 tablator.py potions` is entered,
 then there must be a correctly formatted file called "potions.json" or
 "potions.yaml" in DATA_DIR. Similarly, if a table row has a subtable key,
 then there must be a corresponding table file in DATA_DIR.
 
 (how to set the DATA_DIR)
+
 ```python
 tablator.data.set_data_dir('/tmp/data')
 ```
@@ -152,17 +153,6 @@ made on the _table_.
 For each _column_, it is generated if d% is less than or equal to _chance_ for
 that column.  If the roll fails, the column is skipped.
 
-* __name__ required, a string
-* __type__ is required, the string "table-list"
-* __columns__ is required, an array
-* __columns[i].chance__ is optional, a number in 1-100, chance of item occurring
-    on d%, defaults to 100
-* __columns[i].name__ is required, a string, item name (used if table is null)
-* __columns[i].quantity__ is optional, a dice expression, number of rolls on
-    table or number of items, defaults to 1
-* __columns[i].table__ = is required, a string, roll on this table 'quantity'
-    times or _null_
-
 ```json
 {
   "name": "Table List Name",
@@ -189,6 +179,17 @@ that column.  If the roll fails, the column is skipped.
  ]
 }
 ```
+
+* __name__ required, a string
+* __type__ is required, the string "table-list"
+* __columns__ is required, an array
+* __columns[i].chance__ is optional, a number in 1-100, chance of item occurring
+    on d%, defaults to 100
+* __columns[i].name__ is required, a string, item name (used if table is null)
+* __columns[i].quantity__ is optional, a dice expression, number of rolls on
+    table or number of items, defaults to 1
+* __columns[i].table__ = is required, a string, roll on this table 'quantity'
+    times or _null_
 
 In the above example, there is an 80% chance of generating 2-8 items from
 "table-a", a 15% chance of generating one item from "table-b", and a 50% chance
