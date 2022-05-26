@@ -228,3 +228,11 @@ python3 -c 'import tablator'                            # verify
 pandoc --standalone -t man -o build/tablator.1 tablator.1.md
 man -l build/tablator.1
 ```
+
+## Tests
+
+```
+cd tests
+PYTHONPATH=../src pytest -v
+```
+

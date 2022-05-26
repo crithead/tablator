@@ -274,11 +274,9 @@ def print_plain(table_name):
             chance = '{0:3d}%'.format(get_chance(column))
             quantity = column['quantity']
             name = column['name']
-            if column['table'] is None:
-                print(chance, quantity, name)
-            else:
-                table_name = get_table_name(column['table'])
-                print(chance, quantity, table_name)
+            if 'table' in column:
+                name = get_table_name(column['table'])
+            print(chance, quantity, name) # TODO Format
         print()
 
     else:
@@ -296,7 +294,7 @@ def random_row(table):
     for row in table['rows']:
         row_weight = row['weight'] if 'weight' in row else 1
         weight_total += row_weight
-        if item_index <= weight_total:
+        if weight_total >= item_index:
             return row
     raise RuntimeError('row index out of bounds: index {}, total_weight {}'
                        .format(item_index, total_weight))
