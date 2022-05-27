@@ -1,3 +1,5 @@
+# PyTest for tablator.table
+
 import pytest
 import tablator.table
 
@@ -24,6 +26,40 @@ def two_item_table():
         'rows': [
             { 'weight': 1, 'name': 'row one' },
             { 'weight': 1, 'name': 'row two' }
+        ]
+    }
+
+@pytest.fixture
+def default_weight_table():
+     return {
+        'name': 'Two Item Table',
+        'type': 'items',
+        'total-weight': 5,
+        'rows': [
+            { 'name': 'row one' },
+            { 'name': 'row two' },
+            { 'name': 'row three' },
+            { 'name': 'row four' },
+            { 'name': 'row five' }
+        ]
+    }
+
+@pytest.fixture
+def nine_item_table():
+     return {
+        'name': 'Nine Item Table',
+        'type': 'items',
+        'total-weight': 45,
+        'rows': [
+            { 'weight': 1, 'name': 'row one' },
+            { 'weight': 2, 'name': 'row two' },
+            { 'weight': 3, 'name': 'row three' },
+            { 'weight': 4, 'name': 'row four' },
+            { 'weight': 5, 'name': 'row five' },
+            { 'weight': 6, 'name': 'row six' },
+            { 'weight': 7, 'name': 'row seven' },
+            { 'weight': 8, 'name': 'row eight' },
+            { 'weight': 9, 'name': 'row nine' }
         ]
     }
 
@@ -61,9 +97,55 @@ def table_list():
     }
 
 
-def test_check_weights():
-    #tablator.table.check_weights(table)
-    assert True
+@pytest.fixture
+def bad_weight_table():
+     return {
+        'name': 'Bad Weight Item Table',
+        'type': 'items',
+        'total-weight': 10,
+        'rows': [
+            { 'weight': 1, 'name': 'row one' },
+            { 'weight': 3, 'name': 'row two' },
+            { 'weight': 5, 'name': 'row three' },
+            { 'weight': 3, 'name': 'row four' },
+            { 'weight': 1, 'name': 'row five' }
+        ]
+    }
+
+def test_check_weights_1(one_item_table):
+    try:
+        tablator.table.check_weights(one_item_table)
+    except ValueError as e:
+        assert False, f'unexpected exception: {e}'
+
+
+def test_check_weights_2(nine_item_table):
+    try:
+        tablator.table.check_weights(nine_item_table)
+    except ValueError as e:
+        assert False, f'unexpected exception: {e}'
+
+
+def test_check_weights_default_weights(default_weight_table):
+    try:
+        tablator.table.check_weights(default_weight_table)
+    except ValueError as e:
+        assert False, f'unexpected exception: {e}'
+
+
+def test_check_weights_non_weighted(capsys, table_list):
+    tablator.logger.set(True, False)    # enable debug output
+    tablator.table.check_weights(table_list)
+    tablator.logger.set(False, False)   # disable debug output
+    out, err = capsys.readouterr()
+    #with capsys.disabled():
+    #    print('out', out, sep='\n')
+    assert out.startswith('--- not a weighted table')
+
+
+def test_check_weights_bad_weights(bad_weight_table):
+    with pytest.raises(ValueError, match=r".* row weights don't add up: .*"):
+        tablator.table.check_weights(bad_weight_table)
 
 
 def test_generate():
@@ -103,7 +185,6 @@ def test_lookup_tables():
 
 # * Mock load_table('table-name')
 # * Capture sys.stdout and compare
-# TODO Three versions of this test: items, tables, table-list
 def test_print_plain_item_table(capsys, monkeypatch, one_item_table):
     def mock_load_table(table_name):
         return one_item_table
