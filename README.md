@@ -223,6 +223,13 @@ python3 setup.py --install --user
 python3 -c 'import tablator'                            # verify
 ```
 
+Dependencies for development
+
+```
+apt install python3-pytest python3-pytest-cov
+sudo python3 -m pip install pytest pytest-cov       # An alternative
+```
+
 ## Build the man page
 
 ```
@@ -232,8 +239,9 @@ man -l build/tablator.1
 
 ## Tests
 
+Run the tests with coverage report
+
 ```
-cd tests
-PYTHONPATH=../src pytest -v
+tests/run.sh
 ```
 
