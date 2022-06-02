@@ -57,17 +57,17 @@ def load(table_name=None):
     if table_name is None:
         raise ValueError('table_name is None')
 
-    table_file = os.path.join(DATA_DIR, table_name + '.yaml')
-    if os.path.exists(table_file):
-        import yaml
-        with open(table_file, 'r') as f:
-            return yaml.load(f)
-
     table_file = os.path.join(DATA_DIR, table_name + '.json')
     if os.path.exists(table_file):
         import json
         with open(table_file, 'r') as f:
             return json.load(f)
+
+    table_file = os.path.join(DATA_DIR, table_name + '.yaml')
+    if os.path.exists(table_file):
+        import yaml
+        with open(table_file, 'r') as f:
+            return yaml.load(f, Loader=yaml.SafeLoader)
 
     raise ValueError("Table not found: " + table_name)
 

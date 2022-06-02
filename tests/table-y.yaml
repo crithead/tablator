@@ -1,0 +1,11 @@
+---
+name: Item Table
+type: items
+total-weight: 14
+rows:
+  - weight: 1
+    name: one
+  - weight: 4
+    name: two
+  - weight: 9
+    name: three
