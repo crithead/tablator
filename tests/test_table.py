@@ -112,6 +112,15 @@ def bad_weight_table():
         ]
     }
 
+
+@pytest.fixture
+def unknown_table():
+     return {
+        'name': 'One Item Table',
+        'type': 'unknown',
+    }
+
+
 def test_check_weights_1(one_item_table):
     try:
         tablator.table.check_weights(one_item_table)
@@ -148,9 +157,60 @@ def test_check_weights_bad_weights(bad_weight_table):
         tablator.table.check_weights(bad_weight_table)
 
 
-def test_generate():
+def test_generate_invalid_table(monkeypatch):
+    def mock_load_table(table_name):
+        return None
+
+    with pytest.raises(ValueError, match='Table not found: no-table'):
+        tablator.table.generate('no-table', 1)
+
+
+def test_generate_item_table(monkeypatch, one_item_table):
+    def mock_load_table(table_name):
+        return one_item_table
+
+    monkeypatch.setattr(tablator.table, 'load_table', mock_load_table)
+    values = tablator.table.generate('one-item-table', 3)
+    assert values == ['only row', 'only row', 'only row']
+
+
+def test_generate_table_list_table(monkeypatch, one_item_table):
+    def mock_load_table(table_name):
+        return one_item_table
+
+    def mock_lookup_table_list(table_name):
+        return ['only row']
+
+    monkeypatch.setattr(tablator.table, 'load_table', mock_load_table)
+    monkeypatch.setattr(tablator.table, 'lookup_table_list', mock_lookup_table_list)
+    values = tablator.table.generate('list-table', 3)
+    assert values == ['only row', 'only row', 'only row']
+
+
+def test_generate_tables_table(monkeypatch, one_item_table):
+    def mock_load_table(table_name):
+        return one_item_table
+
+    def mock_lookup_tables(table_name):
+        return ['only row']
+
+    monkeypatch.setattr(tablator.table, 'load_table', mock_load_table)
+    monkeypatch.setattr(tablator.table, 'lookup_tables', mock_lookup_tables)
+    values = tablator.table.generate('tables-table', 2)
+    assert values == ['only row', 'only row']
+
+
     #tablator.table.generate(table_name, num_rolls=1)
     assert True
+
+
+def test_generate_invalid_table_type(monkeypatch, unknown_table):
+    def mock_load_table(table_name):
+        return unknown_table
+
+    monkeypatch.setattr(tablator.table, 'load_table', mock_load_table)
+    with pytest.raises(ValueError, match='Unknown table type: unknown'):
+        tablator.table.generate('unknown-table', 1)
 
 
 def test_get_chance():

@@ -37,12 +37,11 @@ def generate(table_name, num_rolls=1):
     Generate N items from the given table.
     Assumes DATA_DIR has been set.
     Return a list of item names (str).
+    Raises ValueError if the table cannot be loaded.
     """
     trace('generate')
 
     table = load_table(table_name)
-    if table is None:
-        raise ValueError('Invalid table: ' + table_name)
 
     values = list()
     if table['type'] == 'items':
