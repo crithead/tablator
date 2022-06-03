@@ -63,6 +63,23 @@ def nine_item_table():
         ]
     }
 
+
+@pytest.fixture
+def bad_weight_table():
+     return {
+        'name': 'Bad Weight Item Table',
+        'type': 'items',
+        'total-weight': 10,
+        'rows': [
+            { 'weight': 1, 'name': 'row one' },
+            { 'weight': 3, 'name': 'row two' },
+            { 'weight': 5, 'name': 'row three' },
+            { 'weight': 3, 'name': 'row four' },
+            { 'weight': 1, 'name': 'row five' }
+        ]
+    }
+
+
 @pytest.fixture
 def tables_table():
      return {
@@ -98,17 +115,39 @@ def table_list():
 
 
 @pytest.fixture
-def bad_weight_table():
+def table_list_no_chance():
      return {
-        'name': 'Bad Weight Item Table',
-        'type': 'items',
-        'total-weight': 10,
-        'rows': [
-            { 'weight': 1, 'name': 'row one' },
-            { 'weight': 3, 'name': 'row two' },
-            { 'weight': 5, 'name': 'row three' },
-            { 'weight': 3, 'name': 'row four' },
-            { 'weight': 1, 'name': 'row five' }
+        'name': 'Table List, No Chance',
+        'type': 'table-list',
+        'columns': [
+            {
+                'name': 'First Table',
+                'quantity': '1'
+            },
+            {
+                'name': 'Second Table',
+                'quantity': '2d10'
+            },
+        ]
+    }
+
+
+@pytest.fixture
+def table_list_bad_chance():
+     return {
+        'name': 'Table List, Bad Chance',
+        'type': 'table-list',
+        'columns': [
+            {
+                'name': 'First Table',
+                'chance': -99,
+                'table': 'one-item-table'
+            },
+            {
+                'name': 'Second Table',
+                'chance': 1234,
+                'table': 'one-item-table'
+            },
         ]
     }
 
@@ -213,14 +252,44 @@ def test_generate_invalid_table_type(monkeypatch, unknown_table):
         tablator.table.generate('unknown-table', 1)
 
 
-def test_get_chance():
-    #tablator.table.get_chance(column)
-    assert True
+def test_get_chance_not_present(table_list_no_chance):
+    chance = tablator.table.get_chance(table_list_no_chance['columns'][0])
+    assert chance == 100
+    chance = tablator.table.get_chance(table_list_no_chance['columns'][1])
+    assert chance == 100
 
 
-def test_get_table_name():
-    #tablator.table.get_table_name(table_name)
-    assert True
+def test_get_chance_invalid_chance(table_list_bad_chance):
+    with pytest.raises(ValueError, match='Column chance out of range: -99'):
+        chance = tablator.table.get_chance(table_list_bad_chance['columns'][0])
+    with pytest.raises(ValueError, match='Column chance out of range: 1234'):
+        chance = tablator.table.get_chance(table_list_bad_chance['columns'][1])
+
+
+def test_get_chance_ok(table_list):
+    chance = tablator.table.get_chance(table_list['columns'][0])
+    assert chance == 50
+    chance = tablator.table.get_chance(table_list['columns'][1])
+    assert chance == 35
+
+
+def test_get_table_name_ok(monkeypatch, one_item_table):
+    def mock_load_table(table_name):
+        return one_item_table
+
+    monkeypatch.setattr(tablator.table, 'load_table', mock_load_table)
+    name = tablator.table.get_table_name('one-item-table')
+    assert name == 'One Item Table'
+    assert name == one_item_table['name']
+
+
+def test_get_table_name_no_name(monkeypatch):
+    def mock_load_table(table_name):
+        return dict()
+
+    monkeypatch.setattr(tablator.table, 'load_table', mock_load_table)
+    with pytest.raises(KeyError):
+        chance = tablator.table.get_table_name('empty-table')
 
 
 def test_load_table():

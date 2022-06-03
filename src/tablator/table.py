@@ -66,6 +66,7 @@ def get_chance(column):
     """
     Get the optional chance value from a table-list column.
     Default is 100, if not present.
+    Raises ValueError if out of range.
     :param column: dict
     :return: number in [1, 100]
     """
@@ -73,23 +74,20 @@ def get_chance(column):
     value = 100
     if 'chance' in column:
         chance = column['chance']
-        if chance > 0 or chance <= 100:
+        if 0 < chance and chance <= 100:
             value = chance
         else:
-            ValueError('column chance out of range: {}'.format(chance))
+            raise ValueError('Column chance out of range: {}'.format(chance))
     return value
 
 
 def get_table_name(table_name):
     """
-    Returns a table's name (value from 'name' key) or table_name
+    Returns a table's name (value from 'name' key)
+    Raises ValueError if the table cannot be loaded.
+    :table_name: table's file name
     """
-    value = table_name
-    try:
-        value = load_table(table_name)['name']
-    except:
-        debug('cannot get table name:' + table_name)
-    return value
+    return load_table(table_name)['name']
 
 
 def load_table(table_name):
