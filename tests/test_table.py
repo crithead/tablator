@@ -2,6 +2,7 @@
 
 import pytest
 import tablator.table
+import tablator.logger
 
 @pytest.fixture
 def one_item_table():
@@ -292,9 +293,36 @@ def test_get_table_name_no_name(monkeypatch):
         chance = tablator.table.get_table_name('empty-table')
 
 
-def test_load_table():
-    #tablator.table.load_table(table_name)
-    assert True
+def test_load_table_cache_miss(capsys, monkeypatch, one_item_table):
+    def mock_load(table_name):
+        return one_item_table
+
+    tablator.table._tables.clear()      # clear the table cache
+    tablator.logger.set(True, False)    # enable debug output
+    monkeypatch.setattr(tablator.data, 'load', mock_load)
+    table = tablator.table.load_table('one-item-table')
+    tablator.logger.set(False, False)   # disable debug output
+    out, err = capsys.readouterr()
+    assert '--- loaded one-item-table' in out
+    assert table is not None
+
+
+def test_load_table_cache_hit(capsys, monkeypatch, one_item_table):
+    def mock_load(table_name):
+        return one_item_table
+
+    tablator.table._tables.clear()      # clear the table cache
+    tablator.logger.set(False, False)   # disable debug output
+    monkeypatch.setattr(tablator.data, 'load', mock_load)
+    # Call once to load the table cache
+    table = tablator.table.load_table('one-item-table')
+    tablator.logger.set(True, False)    # enable debug output
+    # Now get table from the table cache
+    table = tablator.table.load_table('one-item-table')
+    tablator.logger.set(False, False)   # disable debug output
+    out, err = capsys.readouterr()
+    assert '--- cache hit one-item-table' in out
+    assert table is not None
 
 
 def test_lookup_items():

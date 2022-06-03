@@ -92,7 +92,7 @@ def get_table_name(table_name):
 
 def load_table(table_name):
     """
-    Load a table, cache the result.
+    Load a table from a file, cache the result.
     Returns a table (dict)
     Raises ValueError
     """
