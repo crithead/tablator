@@ -1,0 +1,28 @@
+{
+  "name": "Hats",
+  "type": "items",
+  "total-weight": 20,
+  "rows": [
+    { "name": "baseball cap" },
+    { "name": "beanie" },
+    { "name": "beret" },
+    { "name": "bicorne" },
+    { "name": "casquette" },
+    { "name": "deerstalker" },
+    { "name": "fedora" },
+    { "name": "fez" },
+    { "name": "homburg" },
+    { "name": "kepi" },
+    { "name": "mitre" },
+    { "name": "pillbox hat" },
+    { "name": "pith helmet" },
+    { "name": "porkpie" },
+    { "name": "sombrero" },
+    { "name": "stetson" },
+    { "name": "tricorne" },
+    { "name": "trillby" },
+    { "name": "ushanka" },
+    { "name": "zucchetto" }
+  ]
+}
+

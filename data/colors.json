@@ -1,0 +1,16 @@
+{
+  "name": "Colors",
+  "type": "items",
+  "total-weight": 8,
+  "rows": [
+    { "name": "red" },
+    { "name": "green" },
+    { "name": "blue" },
+    { "name": "cyan" },
+    { "name": "magenta" },
+    { "name": "yellow" },
+    { "name": "white" },
+    { "name": "black" }
+  ]
+}
+

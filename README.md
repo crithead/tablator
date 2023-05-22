@@ -73,26 +73,6 @@ Items table randomly select an item from the table.  If there is an optional
 subtable, then an item is randomly selected from that table.  The name of the
 item in the subtable is included in parentheses after the primary table item.
 
-```json
-{
-  "name": "Table Name",
-  "type": "items",
-  "total-weight": 100,
-  "rows": [
-    {
-      "weight": 75,
-      "name": "item one",
-      "subtable": "item-colors",
-      "quantity": "2d6"
-    },
-    {
-      "weight": 25,
-      "name": "item two"
-    }
-  ]
-}
-```
-
 * __name__ is required, a string
 * __type__ is required, the string "items"
 * __total-weight__ is required, a number
@@ -107,10 +87,62 @@ If __quantity__ is present, __value__ is ignored. Item __value__ is a special
 case hack added to accomadate gem and jewelry tables.
 The unit of __value__ is "gold pieces" (gp).
 
+If __subtable__ is present, it is included in the current item.  Subtables are
+for adding attributes to the item.
+
+If __table__ is present, it replaces the entire item with a result from a
+lookup in another table.  No other row attributes are processed.
+
+```json
+{
+  "name": "Headwear",
+  "type": "items",
+  "total-weight": 100,
+  "rows": [
+    {
+      "name": "Hats",
+      "weight": 75,
+      "quantity": "2d6",
+      "subtable": "colors"
+    },
+    {
+      "name": "Helmet",
+      "weight": 25,
+      "subtable": "colors"
+    }
+  ]
+}
+```
+
+This example is a table of items named ``Headwear'' where there is a 75%
+chance (75 of 100) to select ``Hats'' and a 25% chance to select ``Helmet''.
+If ``Hats'' is selected, a quantity of 2-12 items with attribute from the
+``colors'' table is included.
+
+The tables are in the +data+ directory. The ``colors'' and ``hats'' tables are
+minimal item list tables where items have only a __name__  and a default
+__weight__ of 1.
+
+
+```
+$ src/tablator.py -d data headwear -n 4
+hats (red, 6)
+hats (green, 2)
+helmet (blue)
+hats (green, 11)
+```
+
 ### Tables Table
 
-The tables table randomly rolls to select a table.  An random item is
-selected from the subtable.
+The tables table randomly selects a subtable.  A random item is then selected
+from the subtable.
+
+* __name__ is required, a string
+* __type__ is required, the string "tables"
+* __total-weight__ is required, a number
+* __rows__ is required, an array
+* __rows[i].weight__ is optional, a number, defaults to 1
+* __rows[i].table__ is required, a string naming a table
 
 ```json
 {
@@ -119,27 +151,25 @@ selected from the subtable.
   "total-weight": 100,
   "rows": [
     {
-      "weight": 40,
       "table": "automobiles"
-    },
-    {
       "weight": 40,
-      "table": "busses"
     },
     {
-      "weight": 20,
+      "table": "busses"
+      "weight": 40,
+    },
+    {
       "table": "aircraft"
+      "weight": 20,
     }
   ]
 }
 ```
 
- * __name__ is required, a string
- * __type__ is required, the string "tables"
- * __total-weight__ is required, a number
- * __rows__ is required, an array
- * __rows[i].weight__ is optional, a number, defaults to 1
- * __rows[i].table__ is required, a string naming a table
+This example is of a table named ``Transportation'' which has a 40% chance (40
+of 100) to generate an item from the ``automobiles'' subtable, a 40% chance to
+generate an item from the ``busses`` subtable, and a 20% chance to generate an
+item from the ``aircraft'' subtable.
 
 ### Table List Table
 

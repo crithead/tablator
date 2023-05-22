@@ -1,0 +1,19 @@
+{
+  "name": "Headwear",
+  "type": "items",
+  "total-weight": 100,
+  "rows": [
+    {
+      "name": "hats",
+      "weight": 75,
+      "subtable": "colors",
+      "quantity": "2d6"
+    },
+    {
+      "name": "helmet",
+      "weight": 25,
+      "subtable": "colors"
+    }
+  ]
+}
+
