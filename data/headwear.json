@@ -4,7 +4,7 @@
   "total-weight": 100,
   "rows": [
     {
-      "name": "hats",
+      "name": "hat",
       "weight": 75,
       "subtable": "colors",
       "quantity": "2d6"

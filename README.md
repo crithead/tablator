@@ -73,6 +73,8 @@ Items table randomly select an item from the table.  If there is an optional
 subtable, then an item is randomly selected from that table.  The name of the
 item in the subtable is included in parentheses after the primary table item.
 
+The items table has the following fields.
+
 * __name__ is required, a string
 * __type__ is required, the string "items"
 * __total-weight__ is required, a number
@@ -100,7 +102,7 @@ lookup in another table.  No other row attributes are processed.
   "total-weight": 100,
   "rows": [
     {
-      "name": "Hats",
+      "name": "Hat",
       "weight": 75,
       "quantity": "2d6",
       "subtable": "colors"
@@ -114,17 +116,17 @@ lookup in another table.  No other row attributes are processed.
 }
 ```
 
-This example is a table of items named ``Headwear'' where there is a 75%
-chance (75 of 100) to select ``Hats'' and a 25% chance to select ``Helmet''.
-If ``Hats'' is selected, a quantity of 2-12 items with attribute from the
-``colors'' table is included.
+This example is a table of items named "Headwear" where there is a 75%
+chance (75 of 100) to select "Hat" and a 25% chance to select "Helmet".
+Both selections will have an attribute from the "colors" subtable.
+If "Hat" is selected, it will have a quantity of 2-12.
 
-The tables are in the +data+ directory. The ``colors'' and ``hats'' tables are
+The tables are in the `data` directory. The "colors" and "hats" tables are
 minimal item list tables where items have only a __name__  and a default
 __weight__ of 1.
 
 
-```
+```text
 $ src/tablator.py -d data headwear -n 4
 hats (red, 6)
 hats (green, 2)
@@ -136,6 +138,8 @@ hats (green, 11)
 
 The tables table randomly selects a subtable.  A random item is then selected
 from the subtable.
+
+The tables table has these fields.
 
 * __name__ is required, a string
 * __type__ is required, the string "tables"
@@ -181,6 +185,8 @@ made on the _table_.
 
 For each _column_, it is generated if d% is less than or equal to _chance_ for
 that column.  If the roll fails, the column is skipped.
+
+The table list table has the following fields.
 
 * __name__ required, a string
 * __type__ is required, the string "table-list"
