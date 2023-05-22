@@ -170,10 +170,10 @@ The tables table has these fields.
 }
 ```
 
-This example is of a table named ``Transportation'' which has a 40% chance (40
-of 100) to generate an item from the ``automobiles'' subtable, a 40% chance to
-generate an item from the ``busses`` subtable, and a 20% chance to generate an
-item from the ``aircraft'' subtable.
+This example is of a table named "Transportation" which has a 40% chance (40
+of 100) to generate an item from the "automobiles" subtable, a 40% chance to
+generate an item from the "busses" subtable, and a 20% chance to generate an
+item from the "aircraft" subtable.
 
 ### Table List Table
 
