@@ -33,13 +33,13 @@ in this order, to set configuration defaults.
 
 - `~/.ttrc` -- In the user's home directory
 - `./.ttrc` -- In the current directory
-- --config _FILE_ -- Anywhere in the host's file system
+- `--config _FILE_` -- Anywhere in the host's file system
 
 This is an example configuration file.
 
 ```
 # Pathfinder Core
-data-dir = ~/Source/tablator-data/pathfinder-core
+data-dir = ~/Projects/tablator-data-pathfinder-core
 trace = no
 verbose = yes
 ```
@@ -241,8 +241,7 @@ python3 -c 'import tablator'                            # verify
 Dependencies for development
 
 ```
-apt install python3-pytest python3-pytest-cov
-sudo python3 -m pip install pytest pytest-cov       # An alternative
+apt install python3-pytest python3-pytest-cov python-pytest-doc
 ```
 
 ## Build the man page
@@ -253,17 +252,6 @@ man -l build/tablator.1
 ```
 
 ## Tests
-
-```sh
-# Required
-sudo apt install python3-pytest
-
-# Optional
-sudo apt install python-pytest-doc python3-pytest python3-pytest-cov
-                 python3-pytest-flake8 python3-pytest-mock
-                 python3-pytest-pep8 python3-pytest-pylint 
-                 python3-pytest-runner
-```
 
 Run the tests with coverage report
 
