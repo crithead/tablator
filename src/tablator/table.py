@@ -37,12 +37,11 @@ def generate(table_name, num_rolls=1):
     Generate N items from the given table.
     Assumes DATA_DIR has been set.
     Return a list of item names (str).
+    Raises ValueError if the table cannot be loaded.
     """
     trace('generate')
 
     table = load_table(table_name)
-    if table is None:
-        raise ValueError('Invalid table: ' + table_name)
 
     values = list()
     if table['type'] == 'items':
@@ -67,6 +66,7 @@ def get_chance(column):
     """
     Get the optional chance value from a table-list column.
     Default is 100, if not present.
+    Raises ValueError if out of range.
     :param column: dict
     :return: number in [1, 100]
     """
@@ -74,28 +74,25 @@ def get_chance(column):
     value = 100
     if 'chance' in column:
         chance = column['chance']
-        if chance > 0 or chance <= 100:
+        if 0 < chance and chance <= 100:
             value = chance
         else:
-            ValueError('column chance out of range: {}'.format(chance))
+            raise ValueError('Column chance out of range: {}'.format(chance))
     return value
 
 
 def get_table_name(table_name):
     """
-    Returns a table's name (value from 'name' key) or table_name
+    Returns a table's name (value from 'name' key)
+    Raises ValueError if the table cannot be loaded.
+    :table_name: table's file name
     """
-    value = table_name
-    try:
-        value = load_table(table_name)['name']
-    except:
-        debug('cannot get table name:' + table_name)
-    return value
+    return load_table(table_name)['name']
 
 
 def load_table(table_name):
     """
-    Load a table, cache the result.
+    Load a table from a file, cache the result.
     Returns a table (dict)
     Raises ValueError
     """
@@ -128,6 +125,10 @@ def lookup_items(table):
     item_name = item['name']
     subitem = None
     quantity = None
+    if 'table' in item:
+        # TODO Roll on a table, return result
+        debug('lookup_item', ':', 'table not implemented')
+        pass
     if 'subtable' in item:
         debug('roll on subtable', item['subtable'])
         subtable = load_table(item['subtable'])
@@ -142,12 +143,12 @@ def lookup_items(table):
     if 'quantity' in item:
         debug('roll quantity', item['quantity'])
         quantity = roll_quantity(item['quantity'])
-        if quantity == "1":
+        if quantity == '1':
             quantity = None
     elif 'value' in item:
         # quantity and value are mutually exclusive
         assert(quantity is None)
-        quantity = roll_quantity(item['value']) + " gp"
+        quantity = roll_quantity(item['value']) + ' gp'
 
     if subitem is not None and quantity is not None:
         item_name = '{} ({}, {})'.format(item['name'], subitem, quantity)
@@ -274,11 +275,9 @@ def print_plain(table_name):
             chance = '{0:3d}%'.format(get_chance(column))
             quantity = column['quantity']
             name = column['name']
-            if column['table'] is None:
-                print(chance, quantity, name)
-            else:
-                table_name = get_table_name(column['table'])
-                print(chance, quantity, table_name)
+            if 'table' in column:
+                name = get_table_name(column['table'])
+            print(chance, quantity, name) # TODO Format
         print()
 
     else:
@@ -296,7 +295,7 @@ def random_row(table):
     for row in table['rows']:
         row_weight = row['weight'] if 'weight' in row else 1
         weight_total += row_weight
-        if item_index <= weight_total:
+        if weight_total >= item_index:
             return row
     raise RuntimeError('row index out of bounds: index {}, total_weight {}'
                        .format(item_index, total_weight))

@@ -31,9 +31,9 @@ that are set by the command line arguments.  Setting on the command file
 override the values in the configuration file.  The following files are used,
 in this order, to set configuration defaults.
 
-- `~/..ttrc`
-- `./.ttrc`
-- --config _FILE_
+- `~/.ttrc` -- In the user's home directory
+- `./.ttrc` -- In the current directory
+- --config _FILE_ -- Anywhere in the host's file system
 
 This is an example configuration file.
 
@@ -57,12 +57,13 @@ _table_list_ table. Each is described in more detail below.
 ### The DATA_DIR
 
 Every table is a JSON or YAML formatted file found in the data directory.
-For example, if the command `python3 treasure-table.py potions` is entered,
+For example, if the command `python3 tablator.py potions` is entered,
 then there must be a correctly formatted file called "potions.json" or
 "potions.yaml" in DATA_DIR. Similarly, if a table row has a subtable key,
 then there must be a corresponding table file in DATA_DIR.
 
 (how to set the DATA_DIR)
+
 ```python
 tablator.data.set_data_dir('/tmp/data')
 ```
@@ -73,7 +74,26 @@ Items table randomly select an item from the table.  If there is an optional
 subtable, then an item is randomly selected from that table.  The name of the
 item in the subtable is included in parentheses after the primary table item.
 
-The items table has the following fields.
+```json
+{
+  "name": "Table Name",
+  "type": "items",
+  "total-weight": 100,
+  "rows": [
+    {
+      "weight": 75,
+      "name": "item one",
+      "subtable": "item-colors",
+      "quantity": "2d6"
+      "table": "some-table",
+    },
+    {
+      "weight": 25,
+      "name": "item two"
+    }
+  ]
+}
+```
 
 * __name__ is required, a string
 * __type__ is required, the string "items"
@@ -82,11 +102,12 @@ The items table has the following fields.
 * __rows[i].name__ is required, a string
 * __rows[i].weight__ is optional, a number, defaults to 1
 * __rows[i].subtable__ is optional, a string naming a table
+* __rows[i].table__ is optional, a string naming a table
 * __rows[i].quantity__ is optional, a dice expression, defaults to 1
 * __rows[i].value__ is optional, a dice-expression, defaults to 1
 
 If __quantity__ is present, __value__ is ignored. Item __value__ is a special
-case hack added to accomadate gem and jewelry tables.
+case hack added to accomodate gem and jewelry tables.
 The unit of __value__ is "gold pieces" (gp).
 
 If __subtable__ is present, it is included in the current item.  Subtables are
@@ -94,45 +115,6 @@ for adding attributes to the item.
 
 If __table__ is present, it replaces the entire item with a result from a
 lookup in another table.  No other row attributes are processed.
-
-```json
-{
-  "name": "Headwear",
-  "type": "items",
-  "total-weight": 100,
-  "rows": [
-    {
-      "name": "Hat",
-      "weight": 75,
-      "quantity": "2d6",
-      "subtable": "colors"
-    },
-    {
-      "name": "Helmet",
-      "weight": 25,
-      "subtable": "colors"
-    }
-  ]
-}
-```
-
-This example is a table of items named "Headwear" where there is a 75%
-chance (75 of 100) to select "Hat" and a 25% chance to select "Helmet".
-Both selections will have an attribute from the "colors" subtable.
-If "Hat" is selected, it will have a quantity of 2-12.
-
-The tables are in the `data` directory. The "colors" and "hats" tables are
-minimal item list tables where items have only a __name__  and a default
-__weight__ of 1.
-
-
-```text
-$ src/tablator.py -d data headwear -n 4
-hats (red, 6)
-hats (green, 2)
-helmet (blue)
-hats (green, 11)
-```
 
 ### Tables Table
 
@@ -186,19 +168,6 @@ made on the _table_.
 For each _column_, it is generated if d% is less than or equal to _chance_ for
 that column.  If the roll fails, the column is skipped.
 
-The table list table has the following fields.
-
-* __name__ required, a string
-* __type__ is required, the string "table-list"
-* __columns__ is required, an array
-* __columns[i].chance__ is optional, a number in 1-100, chance of item occurring
-    on d%, defaults to 100
-* __columns[i].name__ is required, a string, item name (used if table is null)
-* __columns[i].quantity__ is optional, a dice expression, number of rolls on
-    table or number of items, defaults to 1
-* __columns[i].table__ = is required, a string, roll on this table 'quantity'
-    times or _null_
-
 ```json
 {
   "name": "Table List Name",
@@ -225,6 +194,17 @@ The table list table has the following fields.
  ]
 }
 ```
+
+* __name__ required, a string
+* __type__ is required, the string "table-list"
+* __columns__ is required, an array
+* __columns[i].chance__ is optional, a number in 1-100, chance of item occurring
+    on d%, defaults to 100
+* __columns[i].name__ is required, a string, item name (used if table is null)
+* __columns[i].quantity__ is optional, a dice expression, number of rolls on
+    table or number of items, defaults to 1
+* __columns[i].table__ = is required, a string, roll on this table 'quantity'
+    times or _null_
 
 In the above example, there is an 80% chance of generating 2-8 items from
 "table-a", a 15% chance of generating one item from "table-b", and a 50% chance
@@ -258,9 +238,36 @@ python3 setup.py --install --user
 python3 -c 'import tablator'                            # verify
 ```
 
+Dependencies for development
+
+```
+apt install python3-pytest python3-pytest-cov
+sudo python3 -m pip install pytest pytest-cov       # An alternative
+```
+
 ## Build the man page
 
 ```
 pandoc --standalone -t man -o build/tablator.1 tablator.1.md
 man -l build/tablator.1
 ```
+
+## Tests
+
+```sh
+# Required
+sudo apt install python3-pytest
+
+# Optional
+sudo apt install python-pytest-doc python3-pytest python3-pytest-cov
+                 python3-pytest-flake8 python3-pytest-mock
+                 python3-pytest-pep8 python3-pytest-pylint 
+                 python3-pytest-runner
+```
+
+Run the tests with coverage report
+
+```
+tests/run.sh
+```
+

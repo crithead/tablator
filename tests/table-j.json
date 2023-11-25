@@ -1,0 +1,19 @@
+{
+  "name": "Item Table",
+  "type": "items",
+  "total-weight": 6,
+  "rows": [
+    {
+      "weight": 1,
+      "name": "one"
+    },
+    {
+      "weight": 2,
+      "name": "two"
+    },
+    {
+      "weight": 3,
+      "name": "three"
+    }
+  ]
+}
