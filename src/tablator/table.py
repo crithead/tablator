@@ -275,7 +275,7 @@ def print_plain(table_name):
             chance = '{0:3d}%'.format(get_chance(column))
             quantity = column['quantity']
             name = column['name']
-            if 'table' in column:
+            if 'table' in column and column['table'] is not None:
                 name = get_table_name(column['table'])
             print(chance, quantity, name) # TODO Format
         print()
