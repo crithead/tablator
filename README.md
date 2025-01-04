@@ -238,17 +238,17 @@ python3 setup.py --install --user
 python3 -c 'import tablator'                            # verify
 ```
 
+Install the man page.
+
+```
+gzip tablator.1
+sudo install -o root -g root -m 0644 -D -t /usr/local/man/man1 tablator.1.gz
+```
+
 Dependencies for development
 
 ```
 apt install python3-pytest python3-pytest-cov python-pytest-doc
-```
-
-## Build the man page
-
-```
-pandoc --standalone -t man -o build/tablator.1 tablator.1.md
-man -l build/tablator.1
 ```
 
 ## Tests
@@ -258,4 +258,3 @@ Run the tests with coverage report
 ```
 tests/run.sh
 ```
-
