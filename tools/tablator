@@ -1,0 +1,20 @@
+#!/bin/bash
+function get_tablator_dir
+{
+  if [[ -d "$HOME/Source/tablator" ]]; then
+    echo "$HOME/Source/tablator"
+  elif [[ -d "/work/tablator" ]]; then
+    echo "/work/tablator"
+  else
+    local TAB_DIR=$(find $HOME -name tablator -type d | head -n 1)
+    if [[ -z $TAB_DIR ]]; then
+      echo "Can't find Tablator directory"
+      exit 1
+    else
+      echo "$TAB_DIR"
+    fi
+  fi
+}
+readonly DATA_DIR=${TABLATOR_DATA_DIR:-${PWD}}
+readonly TABLATOR_DIR=$(get_tablator_dir)
+exec ${TABLATOR_DIR}/src/tablator.py -d ${DATA_DIR} "$@"

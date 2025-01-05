@@ -1,0 +1,19 @@
+{
+  "name": "Table Default Weight Numbers",
+  "type": "items",
+  "total-weight": 4,
+  "rows": [
+    {
+      "name": "one"
+    },
+    {
+      "name": "two"
+    },
+    {
+      "name": "three"
+    },
+    {
+      "name": "four"
+    }
+  ]
+}

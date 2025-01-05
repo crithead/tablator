@@ -99,7 +99,7 @@ def one_subtable_quantity_table():
 
 
 @pytest.fixture
-def one_subtable_value_table():
+def one_subtable_quantity_units_table():
      return {
         'name': 'One Subtable Table with Value',
         'type': 'items',
@@ -109,7 +109,8 @@ def one_subtable_value_table():
                 'weight': 10,
                 'name': 'only subtable row',
                 'subtable': 'one-item-table',
-                'value': '1000'
+                'quantity': '1000',
+                'units': 'widgets'
             }
         ]
     }
@@ -156,8 +157,14 @@ def table_list():
                 'quantity': '1',
             },
             {
-                'chance': 35,
+                'chance': 80,
                 'name': 'Second Table',
+                'table': None,
+                'quantity': '1',
+            },
+            {
+                'chance': 35,
+                'name': 'Third Table',
                 'quantity': '2',
                 'table': 'two-item-table'
             },
@@ -321,6 +328,8 @@ def test_get_chance_ok(table_list):
     chance = tablator.table.get_chance(table_list['columns'][0])
     assert chance == 50
     chance = tablator.table.get_chance(table_list['columns'][1])
+    assert chance == 80
+    chance = tablator.table.get_chance(table_list['columns'][2])
     assert chance == 35
 
 
@@ -393,15 +402,6 @@ def test_lookup_items_quantity(monkeypatch, one_item_table):
     assert item_name == 'fake row (10)'
 
 
-def test_lookup_items_value(monkeypatch, one_item_table):
-    def mock_random_row(table_name):
-        return { 'name': 'fake row', 'value': '250' }
-
-    monkeypatch.setattr(tablator.table, 'random_row', mock_random_row)
-    item_name = tablator.table.lookup_items(one_item_table)
-    assert item_name == 'fake row (250 gp)'
-
-
 def test_lookup_items_subtable(monkeypatch, one_subtable_table, one_item_table):
     def mock_random_row(table):
         if table is one_subtable_table:
@@ -437,11 +437,11 @@ def test_lookup_items_subtable_quantity(monkeypatch, one_item_table,
     assert item_name == 'only subtable row (only row, 20)'
 
 
-def test_lookup_items_subtable_value(monkeypatch, one_item_table,
-                                     one_subtable_value_table):
+def test_lookup_items_subtable_quantity_units(monkeypatch, one_item_table,
+                                     one_subtable_quantity_units_table):
     def mock_random_row(table):
-        if table is one_subtable_value_table:
-            return one_subtable_value_table['rows'][0]
+        if table is one_subtable_quantity_units_table:
+            return one_subtable_quantity_units_table['rows'][0]
         if table is one_item_table:
             return one_item_table['rows'][0]
         assert False, 'Invalid table!'
@@ -451,8 +451,8 @@ def test_lookup_items_subtable_value(monkeypatch, one_item_table,
 
     monkeypatch.setattr(tablator.table, 'random_row', mock_random_row)
     monkeypatch.setattr(tablator.table, 'load_table', mock_load_table)
-    item_name = tablator.table.lookup_items(one_subtable_value_table)
-    assert item_name == 'only subtable row (only row, 1000 gp)'
+    item_name = tablator.table.lookup_items(one_subtable_quantity_units_table)
+    assert item_name == 'only subtable row (only row, 1000 widgets)'
 
 
 def test_lookup_table_list():
@@ -533,6 +533,7 @@ def test_print_plain_table_list(capsys, monkeypatch, table_list):
 Table List
 ----------
  50% 1 First Table
+ 80% 1 Second Table
  35% 2 Two Item Table
 
 '''

@@ -63,27 +63,22 @@ def find_data_dir():
     """Find a DATA_DIR"""
     tablator.logger.trace('find_data_dir')
 
-    # Check for ~/.local/share/tablator/data
+    # At one time it seemed like a good idea to search some default locations
+    # for the DATA_DIR, but as more table sets were generated, they are now in
+    # sub-directories of 'tablator-data' so this isn't very useful.
+
+    # Check for ~/.local/share/tablator-data
     local_share_dir = os.path.join(os.path.expanduser('~'), '.local', 'share',
-                                   'tablator', 'data')
+                                   'tablator-data')
     if os.path.isdir(local_share_dir):
         return local_share_dir
 
-    # Check for '/usr/share/tablator/data'
-    SHARE_DIR = '/usr/share/tablator/data'
-    if os.path.isdir(SHARE_DIR):
-        return SHARE_DIR
-
-    # Check for DEFAULT_DATA_DIR ('/usr/share/tablator/data')
+    # Check for DEFAULT_DATA_DIR
     if os.path.isdir(tablator.data.DEFAULT_DATA_DIR):
         return tablator.data.DEFAULT_DATA_DIR
 
-    # Check for './data'
-    data_dir = os.path.join(os.getcwd(), 'data')
-    if os.path.isdir(data_dir):
-        return data_dir
-
-    raise ValueError('Cannot find data directory')
+    # Fall back to CWD
+    return os.getcwd()
 
 
 def get_args():

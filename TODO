@@ -2,6 +2,9 @@
 
 List of things that needs to be added, changed or fixed.
 
+1. Finish unit tests
+2. Add "units" to top level object for value (now that 'gp" has been removed)
+
 ## Finish Unit Tests
 
 ### Add more tests to `test_table.py` to get 100% coverage.

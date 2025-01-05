@@ -125,6 +125,7 @@ def lookup_items(table):
     item_name = item['name']
     subitem = None
     quantity = None
+    units = None
     if 'table' in item:
         # TODO Roll on a table, return result
         debug('lookup_item', ':', 'table not implemented')
@@ -143,12 +144,10 @@ def lookup_items(table):
     if 'quantity' in item:
         debug('roll quantity', item['quantity'])
         quantity = roll_quantity(item['quantity'])
+        if 'units' in item:
+            quantity = '{} {}'.format(quantity, item['units'])
         if quantity == '1':
             quantity = None
-    elif 'value' in item:
-        # quantity and value are mutually exclusive
-        assert(quantity is None)
-        quantity = roll_quantity(item['value']) + ' gp'
 
     if subitem is not None and quantity is not None:
         item_name = '{} ({}, {})'.format(item['name'], subitem, quantity)

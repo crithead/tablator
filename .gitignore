@@ -5,3 +5,6 @@
 .coverage
 build
 dist
+src/tablator.egg-info/
+data/lines*json
+data/lines*yml

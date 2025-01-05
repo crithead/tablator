@@ -6,8 +6,8 @@ tablator \- prints a random item from a table
 .B tablator [ -c \fICONFIG\fR ] [ -d \fIDATA_DIR\fR ] [ -n \fINUMBER\fR ]
      [ -l | --list ] [ -p | --print ] [ -t | --trace ] [ -v | --verbose ]
      [ tables ... ]
-.B tablator [ -c \fICONFIG\fR ]  [-d \fIDATA_DIR\fR ] [ -l | --list ]
-.B tablator [ -c \fICONFIG\fR ]  [-d \fIDATA_DIR\fR ] [ -p | --print ] table
+.B tablator [-d \fIDATA_DIR\fR ] [ -l | --list ]
+.B tablator [ -c \fICONFIG\fR ] [ -p | --print ] table
 .B tablator [ -h | --help ]
 .fi
 .SH DESCRIPTION
@@ -17,10 +17,16 @@ Randomly select items from lookup tables.
 There are two parts to this project, the tablator (Python) module and the
 command line tool.  This page describes the command line tool.
 .PP
-The tablator python module is a general purpose library for randomly selecting
-results from look-up tables.  Each row in the table has a weight.  A number is
-randomly generated from 1 to "total weight" and the row corresponding to that
-number is selected.
+The \fBtablator\fR tool is both an example of how to use the library and allows
+use of the data sets.  It lists the available tables, prints tables to the
+console, and roll (select a random row) on those tables.  The tools requires a
+data directory, defined directly as a program argument, defined in a
+configuration file, or it falls back to the current working directory.
+.PP
+The \fBtablator\fR Python module is a general purpose library for randomly
+selecting results from look-up tables.  Each row in the table has a weight.
+A number is randomly generated from 1 to "total weight" and the row
+corresponding to that number is selected.
 .PP
 Tab-LA-tor. Originally called "treasure tables" was developed to roll up
 magic items from the treasure tables in the AD&D DMG.

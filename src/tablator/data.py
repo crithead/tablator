@@ -7,7 +7,7 @@ import os
 from tablator.logger import debug, trace
 
 # Default data directory when installed
-DEFAULT_DATA_DIR = '/usr/share/tablator/data'
+DEFAULT_DATA_DIR = '/usr/share/tablator-data'
 
 # Data directory (contains table definitions)
 DATA_DIR = DEFAULT_DATA_DIR

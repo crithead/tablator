@@ -81,11 +81,17 @@ item in the subtable is included in parentheses after the primary table item.
   "total-weight": 100,
   "rows": [
     {
-      "weight": 75,
+      "weight": 50,
       "name": "item one",
       "subtable": "item-colors",
-      "quantity": "2d6"
+      "quantity": "2d6",
       "table": "some-table",
+    },
+    {
+      "weight": 25,
+      "name": "printer paper",
+      "quantity": "2d10",
+      "units": "reams",
     },
     {
       "weight": 25,
@@ -104,11 +110,9 @@ item in the subtable is included in parentheses after the primary table item.
 * __rows[i].subtable__ is optional, a string naming a table
 * __rows[i].table__ is optional, a string naming a table
 * __rows[i].quantity__ is optional, a dice expression, defaults to 1
-* __rows[i].value__ is optional, a dice-expression, defaults to 1
+* __rows[i].units__ is optional, a string, appended to quantity result
 
-If __quantity__ is present, __value__ is ignored. Item __value__ is a special
-case hack added to accomodate gem and jewelry tables.
-The unit of __value__ is "gold pieces" (gp).
+If __quantity__ is present, __units__ is appended to the generated quantity.
 
 If __subtable__ is present, it is included in the current item.  Subtables are
 for adding attributes to the item.
@@ -118,17 +122,8 @@ lookup in another table.  No other row attributes are processed.
 
 ### Tables Table
 
-The tables table randomly selects a subtable.  A random item is then selected
-from the subtable.
-
-The tables table has these fields.
-
-* __name__ is required, a string
-* __type__ is required, the string "tables"
-* __total-weight__ is required, a number
-* __rows__ is required, an array
-* __rows[i].weight__ is optional, a number, defaults to 1
-* __rows[i].table__ is required, a string naming a table
+The tables table randomly rolls to select a table.  An random item is
+selected from the subtable.
 
 ```json
 {
@@ -137,25 +132,27 @@ The tables table has these fields.
   "total-weight": 100,
   "rows": [
     {
+      "weight": 40,
       "table": "automobiles"
-      "weight": 40,
     },
     {
+      "weight": 40,
       "table": "busses"
-      "weight": 40,
     },
     {
-      "table": "aircraft"
       "weight": 20,
+      "table": "aircraft"
     }
   ]
 }
 ```
 
-This example is of a table named "Transportation" which has a 40% chance (40
-of 100) to generate an item from the "automobiles" subtable, a 40% chance to
-generate an item from the "busses" subtable, and a 20% chance to generate an
-item from the "aircraft" subtable.
+ * __name__ is required, a string
+ * __type__ is required, the string "tables"
+ * __total-weight__ is required, a number
+ * __rows__ is required, an array
+ * __rows[i].weight__ is optional, a number, defaults to 1
+ * __rows[i].table__ is required, a string naming a table
 
 ### Table List Table
 
@@ -203,8 +200,8 @@ that column.  If the roll fails, the column is skipped.
 * __columns[i].name__ is required, a string, item name (used if table is null)
 * __columns[i].quantity__ is optional, a dice expression, number of rolls on
     table or number of items, defaults to 1
-* __columns[i].table__ = is required, a string, roll on this table 'quantity'
-    times or _null_
+* __columns[i].table__ = is optional, a string, roll on this table 'quantity'
+    times, may be _null_
 
 In the above example, there is an 80% chance of generating 2-8 items from
 "table-a", a 15% chance of generating one item from "table-b", and a 50% chance
@@ -238,22 +235,28 @@ python3 setup.py --install --user
 python3 -c 'import tablator'                            # verify
 ```
 
-Install the man page.
-
-```
-gzip tablator.1
-sudo install -o root -g root -m 0644 -D -t /usr/local/man/man1 tablator.1.gz
-```
-
 Dependencies for development
 
 ```
-apt install python3-pytest python3-pytest-cov python-pytest-doc
+apt install python3-pytest python3-pytest-cov
+sudo python3 -m pip install pytest pytest-cov       # An alternative
+```
+
+## The man page
+
+```
+man -l tablator.1
 ```
 
 ## Tests
 
-Run the tests with coverage report
+Install +python3-pytest+.
+
+Optionally install +python-pytest-doc+, +python3-pytest+,
++python3-pytest-cov+, +python3-pytest-flake8+, +python3-pytest-mock+,
++python3-pytest-pep8+, +python3-pytest-pylint+, +python3-pytest-runner+.
+
+Run the tests with coverage report from the root of the repository.
 
 ```
 tests/run.sh
