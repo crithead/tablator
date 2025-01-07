@@ -85,7 +85,6 @@ item in the subtable is included in parentheses after the primary table item.
       "name": "item one",
       "subtable": "item-colors",
       "quantity": "2d6",
-      "table": "some-table",
     },
     {
       "weight": 25,
@@ -118,9 +117,30 @@ If __subtable__ is present, it is included in the current item.  Subtables are
 for adding attributes to the item.
 
 If __table__ is present, it replaces the entire item with a result from a
-lookup in another table.  No other row attributes are processed.  This was
-the _Tables Table_ which is just a special case of an _Items Table_ that
-requires only __table__ and __weight__ keys.
+lookup in another table.  No other row attributes are processed.  This kind of
+_Items Table_ requires only __table__ and __weight__ keys.
+
+```json
+{
+  "name": "Table of Tables",
+  "type": "items",
+  "total-weight": 100,
+  "rows": [
+    {
+      "weight": 30,
+      "table": "fruits",
+    },
+    {
+      "weight": 40,
+      "table": "vegetables",
+    },
+    {
+      "weight": 30,
+      "table": "grains",
+    }
+  ]
+}
+```
 
 ### Tables Table
 
