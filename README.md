@@ -81,9 +81,13 @@ item in the subtable is included in parentheses after the primary table item.
   "total-weight": 100,
   "rows": [
     {
+      "weight": 25,
+      "name": "notebook"
+    },
+    {
       "weight": 50,
-      "name": "item one",
-      "subtable": "item-colors",
+      "name": "ink pens",
+      "subtable": "colors",
       "quantity": "2d6",
     },
     {
@@ -91,10 +95,6 @@ item in the subtable is included in parentheses after the primary table item.
       "name": "printer paper",
       "quantity": "2d10",
       "units": "reams",
-    },
-    {
-      "weight": 25,
-      "name": "item two"
     }
   ]
 }
@@ -106,8 +106,8 @@ item in the subtable is included in parentheses after the primary table item.
 * __rows__ is required, an array
 * __rows[i].name__ is required, a string
 * __rows[i].weight__ is optional, a number, defaults to 1
-* __rows[i].subtable__ is optional, a string naming a table
 * __rows[i].table__ is optional, a string naming a table
+* __rows[i].subtable__ is optional, a string naming a table
 * __rows[i].quantity__ is optional, a dice expression, defaults to 1
 * __rows[i].units__ is optional, a string, appended to quantity result
 
@@ -118,7 +118,7 @@ for adding attributes to the item.
 
 If __table__ is present, it replaces the entire item with a result from a
 lookup in another table.  No other row attributes are processed.  This kind of
-_Items Table_ requires only __table__ and __weight__ keys.
+_Items Table_ requires only __rows[i].table__ and __rows[i].weight__ keys.
 
 ```json
 {
@@ -141,6 +141,10 @@ _Items Table_ requires only __table__ and __weight__ keys.
   ]
 }
 ```
+
+Note also that weights are relative.
+The above example could have _total-weight_ of 10 and row _weight_ of 3, 4,
+and 3 or 20 and 6, 8, 6 for a d20-based table.
 
 ### Tables Table
 
