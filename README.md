@@ -118,43 +118,11 @@ If __subtable__ is present, it is included in the current item.  Subtables are
 for adding attributes to the item.
 
 If __table__ is present, it replaces the entire item with a result from a
-lookup in another table.  No other row attributes are processed.
+lookup in another table.  No other row attributes are processed.  This was
+the _Tables Table_ which is just a special case of an _Items Table_ that
+requires only __table__ and __weight__ keys.
 
 ### Tables Table
-
-The tables table randomly rolls to select a table.  An random item is
-selected from the subtable.
-
-```json
-{
-  "name": "Transportation",
-  "type": "tables",
-  "total-weight": 100,
-  "rows": [
-    {
-      "weight": 40,
-      "table": "automobiles"
-    },
-    {
-      "weight": 40,
-      "table": "busses"
-    },
-    {
-      "weight": 20,
-      "table": "aircraft"
-    }
-  ]
-}
-```
-
- * __name__ is required, a string
- * __type__ is required, the string "tables"
- * __total-weight__ is required, a number
- * __rows__ is required, an array
- * __rows[i].weight__ is optional, a number, defaults to 1
- * __rows[i].table__ is required, a string naming a table
-
-### Table List Table
 
 A list of tables. Roll once on every table (column) in the list.
 
@@ -168,7 +136,7 @@ that column.  If the roll fails, the column is skipped.
 ```json
 {
   "name": "Table List Name",
-  "type": "table-list",
+  "type": "tables",
   "columns" : [
     {
       "chance" : 80,
@@ -193,7 +161,7 @@ that column.  If the roll fails, the column is skipped.
 ```
 
 * __name__ required, a string
-* __type__ is required, the string "table-list"
+* __type__ is required, the string "tables"
 * __columns__ is required, an array
 * __columns[i].chance__ is optional, a number in 1-100, chance of item occurring
     on d%, defaults to 100
@@ -250,11 +218,11 @@ man -l tablator.1
 
 ## Tests
 
-Install +python3-pytest+.
+Install `python3-pytest`.
 
-Optionally install +python-pytest-doc+, +python3-pytest+,
-+python3-pytest-cov+, +python3-pytest-flake8+, +python3-pytest-mock+,
-+python3-pytest-pep8+, +python3-pytest-pylint+, +python3-pytest-runner+.
+Optionally install `python-pytest-doc`, `python3-pytest`,
+`python3-pytest-cov`, `python3-pytest-flake8`, `python3-pytest-mock`,
+`python3-pytest-pep`, `python3-pytest-pylint`, `python3-pytest-runner`.
 
 Run the tests with coverage report from the root of the repository.
 

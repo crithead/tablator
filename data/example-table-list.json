@@ -1,6 +1,6 @@
 {
   "name": "Example Table List Table",
-  "type": "table-list",
+  "type": "tables",
   "columns": [
     {
       "name": "red",

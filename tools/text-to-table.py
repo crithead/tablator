@@ -32,7 +32,7 @@ def msg(*args):
         print(*args)
 
 
-TABLE_TYPES = [ 'items', 'tables', 'table-list' ]
+TABLE_TYPES = [ 'items', 'tables' ]
 
 def get_options():
     parser = argparse.ArgumentParser(
@@ -116,7 +116,7 @@ def lines_to_table(lines, opts):
 
 
     # Clean up rows by removing keys where quantity is 1
-    # or weight is 1 (unless opt.weights is True) 
+    # or weight is 1 (unless opt.weights is True)
     for row in rows:
         if 'quantity' in row.keys() and row['quantity'] == "1":
             del row['quantity']

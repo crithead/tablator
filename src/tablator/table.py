@@ -48,14 +48,10 @@ def generate(table_name, num_rolls=1):
         for i in range(num_rolls):
             item_name = lookup_items(table)
             values.append(item_name)
-    elif table['type'] == 'table-list':
-        for i in range(num_rolls):
-            item_list = lookup_table_list(table)
-            values.extend(item_list)
     elif table['type'] == 'tables':
         for i in range(num_rolls):
-            item_name = lookup_tables(table)
-            values.append(item_name)
+            item_list = lookup_tables(table)
+            values.extend(item_list)
     else:
         raise ValueError('Unknown table type: ' + table['type'])
 
@@ -64,7 +60,7 @@ def generate(table_name, num_rolls=1):
 
 def get_chance(column):
     """
-    Get the optional chance value from a table-list column.
+    Get the optional chance value from a tables column.
     Default is 100, if not present.
     Raises ValueError if out of range.
     :param column: dict
@@ -122,21 +118,18 @@ def lookup_items(table):
     debug('lookup_item', table['name'], table['total-weight'],
           len(table['rows']))
     item = random_row(table)
+    if 'table' in item:
+        subtable = load_table(item['table'])
+        return lookup_items(subtable)
     item_name = item['name']
     subitem = None
     quantity = None
     units = None
-    if 'table' in item:
-        # TODO Roll on a table, return result
-        debug('lookup_item', ':', 'table not implemented')
-        pass
     if 'subtable' in item:
         debug('roll on subtable', item['subtable'])
         subtable = load_table(item['subtable'])
         if subtable['type'] == 'items':
             subitem = lookup_items(subtable)
-        elif subtable['type'] == 'tables':
-            subitem = lookup_tables(subtable)
         else:
             raise ValueError('invalid table type: ' + subtable['type'])
         # if len(subitem) == 0:
@@ -160,7 +153,7 @@ def lookup_items(table):
     return item_name
 
 
-def lookup_table_list(table):
+def lookup_tables(table):
     """
     The top-level table is a list of tables.
     Roll once on each table in the list.
@@ -171,7 +164,7 @@ def lookup_table_list(table):
         table: if None, use "quantity + name", else roll on table
         quantity: number of items (bunch) or rolls on table
     """
-    trace('lookup_table_list')
+    trace('lookup_tables')
     debug('table name', table['name'])
     values = list()
     columns = table['columns']
@@ -195,31 +188,11 @@ def lookup_table_list(table):
                     item_name = lookup_items(subtable)
                     values.append(item_name)
                 elif subtable['type'] == 'tables':
-                    item_name = lookup_tables(subtable)
-                    values.append(item_name)
-                elif subtable['type'] == 'table-list':
-                    item_list = lookup_table_list(subtable)
+                    item_list = lookup_tables(subtable)
                     values.extend(item_list)
                 else:
                     raise ValueError('invalid table type: ' + subtable['type'])
     return values
-
-
-def lookup_tables(table):
-    """
-    Select a table from a tables table.
-    Returns an item name.
-    """
-    trace('lookup_tables')
-    debug('lookup_tables', table['name'])
-    #import pdb; pdb.set_trace()
-    row = random_row(table)
-    table_name = row['table']
-    subtable = load_table(table_name)
-    if subtable['type'] == 'items':
-        return lookup_items(subtable)
-    elif subtable['type'] == 'tables':
-        return lookup_tables(subtable)
 
 
 def print_plain(table_name):
@@ -248,26 +221,8 @@ def print_plain(table_name):
             print(s)
         print()
     elif table['type'] == 'tables':
-        # A table of tables
-        debug('print "tables" table')
-        dice = str(table['total-weight'])
-        if dice == '100': dice = '%'
-        print(' d{}'.format(dice), table['name'], sep='\t')
-        print('-----', '-' * len(table['name']), sep='\t')
-        for row in table['rows']:
-            table_name = get_table_name(row['table'])
-            wt = row['weight'] if 'weight' in row else 1
-            s = None
-            if wt > 1:
-                s = "{:02d}-{:02d}\t{}".format(index, index + wt - 1, table_name)
-            else:
-                s = "{:02d}\t{}".format(index, table_name)
-            index += wt
-            print(s)
-        print()
-    elif table['type'] == 'table-list':
         # A list of tables, roll on each table
-        debug('print "table-list" table')
+        debug('print "tables" table')
         print(table['name'])
         print('-' * len(table['name']))
         for column in table['columns']:

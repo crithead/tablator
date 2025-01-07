@@ -135,21 +135,8 @@ def bad_weight_table():
 @pytest.fixture
 def tables_table():
      return {
-        'name': 'Tables Table',
-        'type': 'tables',
-        'total-weight': 50,
-        'rows': [
-            { 'weight': 25, 'table': 'one-item-table' },
-            { 'weight': 25, 'table': 'two-item-table' }
-        ]
-    }
-
-
-@pytest.fixture
-def table_list():
-     return {
         'name': 'Table List',
-        'type': 'table-list',
+        'type': 'tables',
         'columns': [
             {
                 'chance': 50,
@@ -173,10 +160,10 @@ def table_list():
 
 
 @pytest.fixture
-def table_list_no_chance():
+def tables_table_no_chance():
      return {
         'name': 'Table List, No Chance',
-        'type': 'table-list',
+        'type': 'tables',
         'columns': [
             {
                 'name': 'First Table',
@@ -191,10 +178,10 @@ def table_list_no_chance():
 
 
 @pytest.fixture
-def table_list_bad_chance():
+def tables_table_bad_chance():
      return {
         'name': 'Table List, Bad Chance',
-        'type': 'table-list',
+        'type': 'tables',
         'columns': [
             {
                 'name': 'First Table',
@@ -239,9 +226,9 @@ def test_check_weights_default_weights(default_weight_table):
         assert False, f'unexpected exception: {e}'
 
 
-def test_check_weights_non_weighted(capsys, table_list):
+def test_check_weights_non_weighted(capsys, tables_table):
     tablator.logger.set(True, False)    # enable debug output
-    tablator.table.check_weights(table_list)
+    tablator.table.check_weights(tables_table)
     tablator.logger.set(False, False)   # disable debug output
     out, err = capsys.readouterr()
     #with capsys.disabled():
@@ -271,19 +258,6 @@ def test_generate_item_table(monkeypatch, one_item_table):
     assert values == ['only row', 'only row', 'only row']
 
 
-def test_generate_table_list_table(monkeypatch, one_item_table):
-    def mock_load_table(table_name):
-        return one_item_table
-
-    def mock_lookup_table_list(table_name):
-        return ['only row']
-
-    monkeypatch.setattr(tablator.table, 'load_table', mock_load_table)
-    monkeypatch.setattr(tablator.table, 'lookup_table_list', mock_lookup_table_list)
-    values = tablator.table.generate('list-table', 3)
-    assert values == ['only row', 'only row', 'only row']
-
-
 def test_generate_tables_table(monkeypatch, one_item_table):
     def mock_load_table(table_name):
         return one_item_table
@@ -293,12 +267,8 @@ def test_generate_tables_table(monkeypatch, one_item_table):
 
     monkeypatch.setattr(tablator.table, 'load_table', mock_load_table)
     monkeypatch.setattr(tablator.table, 'lookup_tables', mock_lookup_tables)
-    values = tablator.table.generate('tables-table', 2)
-    assert values == ['only row', 'only row']
-
-
-    #tablator.table.generate(table_name, num_rolls=1)
-    assert True
+    values = tablator.table.generate('list-table', 3)
+    assert values == ['only row', 'only row', 'only row']
 
 
 def test_generate_invalid_table_type(monkeypatch, unknown_table):
@@ -310,26 +280,26 @@ def test_generate_invalid_table_type(monkeypatch, unknown_table):
         tablator.table.generate('unknown-table', 1)
 
 
-def test_get_chance_not_present(table_list_no_chance):
-    chance = tablator.table.get_chance(table_list_no_chance['columns'][0])
+def test_get_chance_not_present(tables_table_no_chance):
+    chance = tablator.table.get_chance(tables_table_no_chance['columns'][0])
     assert chance == 100
-    chance = tablator.table.get_chance(table_list_no_chance['columns'][1])
+    chance = tablator.table.get_chance(tables_table_no_chance['columns'][1])
     assert chance == 100
 
 
-def test_get_chance_invalid_chance(table_list_bad_chance):
+def test_get_chance_invalid_chance(tables_table_bad_chance):
     with pytest.raises(ValueError, match='Column chance out of range: -99'):
-        chance = tablator.table.get_chance(table_list_bad_chance['columns'][0])
+        chance = tablator.table.get_chance(tables_table_bad_chance['columns'][0])
     with pytest.raises(ValueError, match='Column chance out of range: 1234'):
-        chance = tablator.table.get_chance(table_list_bad_chance['columns'][1])
+        chance = tablator.table.get_chance(tables_table_bad_chance['columns'][1])
 
 
-def test_get_chance_ok(table_list):
-    chance = tablator.table.get_chance(table_list['columns'][0])
+def test_get_chance_ok(tables_table):
+    chance = tablator.table.get_chance(tables_table['columns'][0])
     assert chance == 50
-    chance = tablator.table.get_chance(table_list['columns'][1])
+    chance = tablator.table.get_chance(tables_table['columns'][1])
     assert chance == 80
-    chance = tablator.table.get_chance(table_list['columns'][2])
+    chance = tablator.table.get_chance(tables_table['columns'][2])
     assert chance == 35
 
 
@@ -455,8 +425,8 @@ def test_lookup_items_subtable_quantity_units(monkeypatch, one_item_table,
     assert item_name == 'only subtable row (only row, 1000 widgets)'
 
 
-def test_lookup_table_list():
-    #tablator.table.lookup_table_list(table)
+def test_lookup_tables_table():
+    #tablator.table.lookup_tables_table(table)
     assert True
 
 
@@ -486,33 +456,7 @@ def test_print_plain_item_table(capsys, monkeypatch, one_item_table):
 
 # * Mock load_table('table-name')
 # * Capture sys.stdout and compare
-def test_print_plain_tables_table(capsys, monkeypatch, one_item_table,
-                                  two_item_table, tables_table):
-    def mock_load_table(table_name):
-        if table_name == 'one-item-table':
-            return one_item_table
-        elif table_name == 'two-item-table':
-            return two_item_table
-        elif table_name == 'tables-table':
-            return tables_table
-
-    monkeypatch.setattr(tablator.table, "load_table", mock_load_table)
-    tablator.table.print_plain('tables-table')
-    out, err = capsys.readouterr()
-    #with capsys.disabled():
-    #    print('out', out, sep='\n')
-    assert out == '''\
- d50	Tables Table
------	------------
-01-25	One Item Table
-26-50	Two Item Table
-
-'''
-
-
-# * Mock load_table('table-name')
-# * Capture sys.stdout and compare
-def test_print_plain_table_list(capsys, monkeypatch, table_list):
+def test_print_plain_tables_table(capsys, monkeypatch, tables_table):
 
     def mock_get_table_name(table_name):
         if table_name == 'two-item-table':
@@ -521,11 +465,11 @@ def test_print_plain_table_list(capsys, monkeypatch, table_list):
             return 'Unknown'
 
     def mock_load_table(table_name):
-        return table_list
+        return tables_table
 
     monkeypatch.setattr(tablator.table, "get_table_name", mock_get_table_name)
     monkeypatch.setattr(tablator.table, "load_table", mock_load_table)
-    tablator.table.print_plain('table-list')
+    tablator.table.print_plain('tables')
     out, err = capsys.readouterr()
     #with capsys.disabled():
     #    print('out', out, sep='\n')
@@ -593,4 +537,3 @@ def test_roll_quantity_7():
     for i in range(100):
         n = tablator.table.roll_quantity('10d10+10x100')
         assert int(n) >= 2000 and int(n) <= 11000
-

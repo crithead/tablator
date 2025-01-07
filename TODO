@@ -16,7 +16,6 @@ def get_chance(column):                     ok
 def get_table_name(table_name):             ok
 def load_table(table_name):                 ok
 def lookup_items(table):                    ok?
-def lookup_table_list(table):               need tests
 def lookup_tables(table):                   need tests
 def print_plain(table_name):                ok?
 def random_row(table):                      ok
@@ -26,4 +25,3 @@ def roll_quantity(quantity):                ok
 ## Unit tests for tabltaor CLI tool
 
 See `tests/someday_test_tablator.py`
-
