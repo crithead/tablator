@@ -212,11 +212,12 @@ def print_plain(table_name):
         # TODO Include quantity, if present
         for row in table['rows']:
             wt = row['weight'] if 'weight' in row else 1
+            row_name = row['name'] if 'name' in row else get_table_name(row['table'])
             s = None
             if wt > 1:
-                s = "{:02d}-{:02d}\t{}".format(index, index + wt - 1, row['name'])
+                s = "{:02d}-{:02d}\t{}".format(index, index + wt - 1, row_name)
             else:
-                s = "{:02d}\t{}".format(index, row['name'])
+                s = "{:02d}\t{}".format(index, row_name)
             index += wt
             print(s)
         print()
