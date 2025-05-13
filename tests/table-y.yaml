@@ -1,6 +1,5 @@
 ---
 name: Item Table
-type: items
 total-weight: 14
 rows:
   - weight: 1

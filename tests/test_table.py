@@ -5,10 +5,9 @@ import tablator.table
 import tablator.logger
 
 @pytest.fixture
-def one_item_table():
+def one_row_table():
      return {
-        'name': 'One Item Table',
-        'type': 'items',
+        'name': 'One Row Table',
         'total-weight': 1,
         'rows': [
             {
@@ -19,10 +18,9 @@ def one_item_table():
     }
 
 @pytest.fixture
-def two_item_table():
+def two_row_table():
      return {
-        'name': 'Two Item Table',
-        'type': 'items',
+        'name': 'Two Row Table',
         'total-weight': 2,
         'rows': [
             { 'weight': 1, 'name': 'row one' },
@@ -33,8 +31,7 @@ def two_item_table():
 @pytest.fixture
 def default_weight_table():
      return {
-        'name': 'Two Item Table',
-        'type': 'items',
+        'name': 'Two Row Table',
         'total-weight': 5,
         'rows': [
             { 'name': 'row one' },
@@ -46,10 +43,9 @@ def default_weight_table():
     }
 
 @pytest.fixture
-def nine_item_table():
+def nine_row_table():
      return {
-        'name': 'Nine Item Table',
-        'type': 'items',
+        'name': 'Nine Row Table',
         'total-weight': 45,
         'rows': [
             { 'weight': 1, 'name': 'row one' },
@@ -69,13 +65,12 @@ def nine_item_table():
 def one_subtable_table():
      return {
         'name': 'One Subtable Table',
-        'type': 'items',
         'total-weight': 1,
         'rows': [
             {
                 'weight': 1,
                 'name': 'only subtable row',
-                'subtable': 'one-item-table'
+                'subtable': 'one-row-table'
             }
         ]
     }
@@ -85,13 +80,12 @@ def one_subtable_table():
 def one_subtable_quantity_table():
      return {
         'name': 'One Subtable Table with Quantity',
-        'type': 'items',
         'total-weight': 10,
         'rows': [
             {
                 'weight': 10,
                 'name': 'only subtable row',
-                'subtable': 'one-item-table',
+                'subtable': 'one-row-table',
                 'quantity': '20'
             }
         ]
@@ -102,13 +96,12 @@ def one_subtable_quantity_table():
 def one_subtable_quantity_units_table():
      return {
         'name': 'One Subtable Table with Value',
-        'type': 'items',
         'total-weight': 10,
         'rows': [
             {
                 'weight': 10,
                 'name': 'only subtable row',
-                'subtable': 'one-item-table',
+                'subtable': 'one-row-table',
                 'quantity': '1000',
                 'units': 'widgets'
             }
@@ -119,8 +112,7 @@ def one_subtable_quantity_units_table():
 @pytest.fixture
 def bad_weight_table():
      return {
-        'name': 'Bad Weight Item Table',
-        'type': 'items',
+        'name': 'Bad Weight Row Table',
         'total-weight': 10,
         'rows': [
             { 'weight': 1, 'name': 'row one' },
@@ -136,7 +128,6 @@ def bad_weight_table():
 def tables_table():
      return {
         'name': 'Table List',
-        'type': 'tables',
         'columns': [
             {
                 'chance': 50,
@@ -153,7 +144,7 @@ def tables_table():
                 'chance': 35,
                 'name': 'Third Table',
                 'quantity': '2',
-                'table': 'two-item-table'
+                'table': 'two-row-table'
             },
         ]
     }
@@ -163,7 +154,6 @@ def tables_table():
 def tables_table_no_chance():
      return {
         'name': 'Table List, No Chance',
-        'type': 'tables',
         'columns': [
             {
                 'name': 'First Table',
@@ -181,40 +171,31 @@ def tables_table_no_chance():
 def tables_table_bad_chance():
      return {
         'name': 'Table List, Bad Chance',
-        'type': 'tables',
         'columns': [
             {
                 'name': 'First Table',
                 'chance': -99,
-                'table': 'one-item-table'
+                'table': 'one-row-table'
             },
             {
                 'name': 'Second Table',
                 'chance': 1234,
-                'table': 'one-item-table'
+                'table': 'one-row-table'
             },
         ]
     }
 
 
-@pytest.fixture
-def unknown_table():
-     return {
-        'name': 'One Item Table',
-        'type': 'unknown',
-    }
-
-
-def test_check_weights_1(one_item_table):
+def test_check_weights_1(one_row_table):
     try:
-        tablator.table.check_weights(one_item_table)
+        tablator.table.check_weights(one_row_table)
     except ValueError as e:
         assert False, f'unexpected exception: {e}'
 
 
-def test_check_weights_2(nine_item_table):
+def test_check_weights_2(nine_row_table):
     try:
-        tablator.table.check_weights(nine_item_table)
+        tablator.table.check_weights(nine_row_table)
     except ValueError as e:
         assert False, f'unexpected exception: {e}'
 
@@ -249,35 +230,26 @@ def test_generate_invalid_table(monkeypatch):
         tablator.table.generate('no-table', 1)
 
 
-def test_generate_item_table(monkeypatch, one_item_table):
+def test_generate_row_table(monkeypatch, one_row_table):
     def mock_load_table(table_name):
-        return one_item_table
+        return one_row_table
 
     monkeypatch.setattr(tablator.table, 'load_table', mock_load_table)
-    values = tablator.table.generate('one-item-table', 3)
+    values = tablator.table.generate('one-row-table', 3)
     assert values == ['only row', 'only row', 'only row']
 
 
-def test_generate_tables_table(monkeypatch, one_item_table):
+def test_generate_tables_table(monkeypatch, one_row_table):
     def mock_load_table(table_name):
-        return one_item_table
+        return one_row_table
 
-    def mock_lookup_tables(table_name):
+    def mock_lookup_columns(table_name):
         return ['only row']
 
     monkeypatch.setattr(tablator.table, 'load_table', mock_load_table)
-    monkeypatch.setattr(tablator.table, 'lookup_tables', mock_lookup_tables)
+    monkeypatch.setattr(tablator.table, 'lookup_columns', mock_lookup_columns)
     values = tablator.table.generate('list-table', 3)
     assert values == ['only row', 'only row', 'only row']
-
-
-def test_generate_invalid_table_type(monkeypatch, unknown_table):
-    def mock_load_table(table_name):
-        return unknown_table
-
-    monkeypatch.setattr(tablator.table, 'load_table', mock_load_table)
-    with pytest.raises(ValueError, match='Unknown table type: unknown'):
-        tablator.table.generate('unknown-table', 1)
 
 
 def test_get_chance_not_present(tables_table_no_chance):
@@ -303,14 +275,14 @@ def test_get_chance_ok(tables_table):
     assert chance == 35
 
 
-def test_get_table_name_ok(monkeypatch, one_item_table):
+def test_get_table_name_ok(monkeypatch, one_row_table):
     def mock_load_table(table_name):
-        return one_item_table
+        return one_row_table
 
     monkeypatch.setattr(tablator.table, 'load_table', mock_load_table)
-    name = tablator.table.get_table_name('one-item-table')
-    assert name == 'One Item Table'
-    assert name == one_item_table['name']
+    name = tablator.table.get_table_name('one-row-table')
+    assert name == 'One Row Table'
+    assert name == one_row_table['name']
 
 
 def test_get_table_name_no_name(monkeypatch):
@@ -322,133 +294,133 @@ def test_get_table_name_no_name(monkeypatch):
         chance = tablator.table.get_table_name('empty-table')
 
 
-def test_load_table_cache_miss(capsys, monkeypatch, one_item_table):
+def test_load_table_cache_miss(capsys, monkeypatch, one_row_table):
     def mock_load(table_name):
-        return one_item_table
+        return one_row_table
 
     tablator.table._tables.clear()      # clear the table cache
     tablator.logger.set(True, False)    # enable debug output
     monkeypatch.setattr(tablator.data, 'load', mock_load)
-    table = tablator.table.load_table('one-item-table')
+    table = tablator.table.load_table('one-row-table')
     tablator.logger.set(False, False)   # disable debug output
     out, err = capsys.readouterr()
-    assert '--- loaded one-item-table' in out
+    assert '--- loaded one-row-table' in out
     assert table is not None
 
 
-def test_load_table_cache_hit(capsys, monkeypatch, one_item_table):
+def test_load_table_cache_hit(capsys, monkeypatch, one_row_table):
     def mock_load(table_name):
-        return one_item_table
+        return one_row_table
 
     tablator.table._tables.clear()      # clear the table cache
     tablator.logger.set(False, False)   # disable debug output
     monkeypatch.setattr(tablator.data, 'load', mock_load)
     # Call once to load the table cache
-    table = tablator.table.load_table('one-item-table')
+    table = tablator.table.load_table('one-row-table')
     tablator.logger.set(True, False)    # enable debug output
     # Now get table from the table cache
-    table = tablator.table.load_table('one-item-table')
+    table = tablator.table.load_table('one-row-table')
     tablator.logger.set(False, False)   # disable debug output
     out, err = capsys.readouterr()
-    assert '--- cache hit one-item-table' in out
+    assert '--- cache hit one-row-table' in out
     assert table is not None
 
 
-def test_lookup_items_simple_lookup(monkeypatch, one_item_table):
+def test_lookup_rows_simple_lookup(monkeypatch, one_row_table):
     def mock_random_row(table_name):
         return { 'name': 'fake row' }
 
     monkeypatch.setattr(tablator.table, 'random_row', mock_random_row)
-    item_name = tablator.table.lookup_items(one_item_table)
-    assert item_name == 'fake row'
+    row_name = tablator.table.lookup_rows(one_row_table)
+    assert row_name == 'fake row'
 
 
-def test_lookup_items_quantity(monkeypatch, one_item_table):
+def test_lookup_rows_quantity(monkeypatch, one_row_table):
     def mock_random_row(table_name):
         return { 'name': 'fake row', 'quantity': '10' }
 
     monkeypatch.setattr(tablator.table, 'random_row', mock_random_row)
-    item_name = tablator.table.lookup_items(one_item_table)
-    assert item_name == 'fake row (10)'
+    row_name = tablator.table.lookup_rows(one_row_table)
+    assert row_name == 'fake row (10)'
 
 
-def test_lookup_items_subtable(monkeypatch, one_subtable_table, one_item_table):
+def test_lookup_rows_subtable(monkeypatch, one_subtable_table, one_row_table):
     def mock_random_row(table):
         if table is one_subtable_table:
             return one_subtable_table['rows'][0]
-        if table is one_item_table:
-            return one_item_table['rows'][0]
+        if table is one_row_table:
+            return one_row_table['rows'][0]
         assert False, 'Invalid table!'
 
     def mock_load_table(table_name):
-        return one_item_table
+        return one_row_table
 
     monkeypatch.setattr(tablator.table, 'random_row', mock_random_row)
     monkeypatch.setattr(tablator.table, 'load_table', mock_load_table)
-    item_name = tablator.table.lookup_items(one_subtable_table)
-    assert item_name == 'only subtable row (only row)'
+    row_name = tablator.table.lookup_rows(one_subtable_table)
+    assert row_name == 'only subtable row (only row)'
 
 
-def test_lookup_items_subtable_quantity(monkeypatch, one_item_table,
+def test_lookup_rows_subtable_quantity(monkeypatch, one_row_table,
                                         one_subtable_quantity_table):
     def mock_random_row(table):
         if table is one_subtable_quantity_table:
             return one_subtable_quantity_table['rows'][0]
-        if table is one_item_table:
-            return one_item_table['rows'][0]
+        if table is one_row_table:
+            return one_row_table['rows'][0]
         assert False, 'Invalid table!'
 
     def mock_load_table(table_name):
-        return one_item_table
+        return one_row_table
 
     monkeypatch.setattr(tablator.table, 'random_row', mock_random_row)
     monkeypatch.setattr(tablator.table, 'load_table', mock_load_table)
-    item_name = tablator.table.lookup_items(one_subtable_quantity_table)
-    assert item_name == 'only subtable row (only row, 20)'
+    row_name = tablator.table.lookup_rows(one_subtable_quantity_table)
+    assert row_name == 'only subtable row (only row, 20)'
 
 
-def test_lookup_items_subtable_quantity_units(monkeypatch, one_item_table,
+def test_lookup_rows_subtable_quantity_units(monkeypatch, one_row_table,
                                      one_subtable_quantity_units_table):
     def mock_random_row(table):
         if table is one_subtable_quantity_units_table:
             return one_subtable_quantity_units_table['rows'][0]
-        if table is one_item_table:
-            return one_item_table['rows'][0]
+        if table is one_row_table:
+            return one_row_table['rows'][0]
         assert False, 'Invalid table!'
 
     def mock_load_table(table_name):
-        return one_item_table
+        return one_row_table
 
     monkeypatch.setattr(tablator.table, 'random_row', mock_random_row)
     monkeypatch.setattr(tablator.table, 'load_table', mock_load_table)
-    item_name = tablator.table.lookup_items(one_subtable_quantity_units_table)
-    assert item_name == 'only subtable row (only row, 1000 widgets)'
+    row_name = tablator.table.lookup_rows(one_subtable_quantity_units_table)
+    assert row_name == 'only subtable row (only row, 1000 widgets)'
 
 
-def test_lookup_tables_table():
-    #tablator.table.lookup_tables_table(table)
+def test_lookup_columns_table():
+    #tablator.table.lookup_columns(table)
     assert True
 
 
-def test_lookup_tables():
-    #tablator.table.lookup_tables(table)
+def test_lookup_columns():
+    #tablator.table.lookup_columns(table)
     assert True
 
 
 # * Mock load_table('table-name')
 # * Capture sys.stdout and compare
-def test_print_plain_item_table(capsys, monkeypatch, one_item_table):
+def test_print_plain_row_table(capsys, monkeypatch, one_row_table):
     def mock_load_table(table_name):
-        return one_item_table
+        return one_row_table
 
     monkeypatch.setattr(tablator.table, "load_table", mock_load_table)
-    tablator.table.print_plain('one-item-table')
+    tablator.table.print_plain('one-row-table')
     out, err = capsys.readouterr()
-    #with capsys.disabled():
-    #    print('out', out, sep='\n')
+    with capsys.disabled():
+        print('out', out, sep='\n')
     assert out == '''\
- d1	One Item Table
------	--------------
+ d1	One Row Table
+-----	-------------
 01	only row
 
 '''
@@ -459,8 +431,8 @@ def test_print_plain_item_table(capsys, monkeypatch, one_item_table):
 def test_print_plain_tables_table(capsys, monkeypatch, tables_table):
 
     def mock_get_table_name(table_name):
-        if table_name == 'two-item-table':
-            return 'Two Item Table'
+        if table_name == 'two-row-table':
+            return 'Two Row Table'
         else:
             return 'Unknown'
 
@@ -478,22 +450,22 @@ Table List
 ----------
  50% 1 First Table
  80% 1 Second Table
- 35% 2 Two Item Table
+ 35% 2 Two Row Table
 
 '''
 
 
-def test_random_row_1(one_item_table):
+def test_random_row_1(one_row_table):
     # Get a "random" row from a one-row table.
-    row = tablator.table.random_row(one_item_table)
+    row = tablator.table.random_row(one_row_table)
     assert isinstance(row, dict)
     assert row['weight'] == 1
     assert row['name'] == 'only row'
 
 
-def test_random_row_2(two_item_table):
+def test_random_row_2(two_row_table):
     # Get a "random" row from a two-row table.
-    row = tablator.table.random_row(two_item_table)
+    row = tablator.table.random_row(two_row_table)
     assert isinstance(row, dict)
     assert row['weight'] == 1
     assert row['name'] == 'row one' or row['name'] == 'row two'

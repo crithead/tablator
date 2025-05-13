@@ -18,6 +18,7 @@ def apply_config(args):
     Fill in option defaults from config file
     Options: data-dir, verbose, trace
     """
+    if args.trace: print('=== apply_config')
 
     # First use ~/.ttrc
     user_config_file = os.path.join(os.path.expanduser('~'), '.ttrc')
@@ -53,14 +54,35 @@ def apply_config(args):
         print('---', 'Ignoring config.print', value)
 
     # Print unknown config keys
-    if len(config) > 0:
+    if len(config) > 0 and args.verbose:
         print('---', 'Unknown config keys')
         for key in config.keys():
             print('key')
 
 
+def apply_environ(args):
+    """
+    Fill in argument values from the environement
+    Options: data-dir, config
+    """
+    if args.trace: print('=== apply_environ')
+
+    if 'TABLATOR_DATA_DIR' in os.environ:
+        data_dir = os.environ['TABLATOR_DATA_DIR']
+        if os.path.isdir(data_dir):
+            if args.verbose: print(f'--- Found TABLATOR_DATA_DIR = {data_dir}')
+            args.data_dir = data_dir
+
+    if 'TABLATOR_CONFIG_FILE' in os.environ:
+        config_file = os.environ['TABLATOR_CONFIG_FILE']
+        if os.path.isfile(config_file):
+            if args.verbose:
+                print(f'--- Found TABLATOR_CONFIG_FILE = {config_file}')
+            args.config = config_file
+
+
 def find_data_dir():
-    """Find a DATA_DIR"""
+    """Find a DATA_DIR."""
     tablator.logger.trace('find_data_dir')
 
     # At one time it seemed like a good idea to search some default locations
@@ -71,14 +93,19 @@ def find_data_dir():
     local_share_dir = os.path.join(os.path.expanduser('~'), '.local', 'share',
                                    'tablator-data')
     if os.path.isdir(local_share_dir):
+        tablator.logger.debug(f'Found DATA_DIR = {local_share_dir}')
         return local_share_dir
 
     # Check for DEFAULT_DATA_DIR
-    if os.path.isdir(tablator.data.DEFAULT_DATA_DIR):
-        return tablator.data.DEFAULT_DATA_DIR
+    default_data_dir = tablator.data.DEFAULT_DATA_DIR
+    if os.path.isdir(default_data_dir):
+        tablator.logger.debug(f'Found DATA_DIR = {default_data_dir}')
+        return default_data_dir
 
     # Fall back to CWD
-    return os.getcwd()
+    cw_data_dir = os.getcwd()
+    tablator.logger.debug(f'Using DATA_DIR = {cw_data_dir}')
+    return cw_data_dir
 
 
 def get_args():
@@ -141,8 +168,8 @@ def to_bool(string):
 if __name__ == '__main__':
     exit_code = None
     try:
-        #import pdb; pdb.set_trace()
         args = get_args()
+        apply_environ(args)
         apply_config(args)
         tablator.logger.set(args.verbose, args.trace)
 

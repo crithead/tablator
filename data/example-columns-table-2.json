@@ -1,0 +1,14 @@
+{
+  "name": "Table of Tables",
+  "total-weight": 100,
+  "rows": [
+    {
+      "weight": 50,
+      "table": "example-items"
+    },
+    {
+      "weight": 50,
+      "table": "example-items"
+    }
+  ]
+}

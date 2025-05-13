@@ -26,7 +26,6 @@ except ImportError as e:
 def one_item_table():
      return {
         'name': 'One Item Table',
-        'type': 'items',
         'total-weight': 1,
         'rows': [
             {
@@ -77,5 +76,3 @@ def test_is_bool_mixedcase_true():
     assert tablator.is_bool('tRuE') is True
     assert tablator.is_bool('oN') is True
     assert tablator.is_bool('eNaBlE') is True
-
-

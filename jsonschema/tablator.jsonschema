@@ -1,0 +1,49 @@
+{
+    "$id": "http://crithead.com/schemas/tablator.json",
+    "$schema": "http://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties" : {
+        "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+        },
+        "total-weight": {
+            "type": "number",
+            "minimum": 1
+        },
+        "rows": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": "string",
+                    "weight": "number",
+                    "quantity": "string",
+                    "units": "string",
+                    "subtable": "string",
+                    "table": "string"
+                },
+                "required": ["name"],
+                "required": ["table"]
+            }
+        },
+        "columns": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": "string",
+                    "chance": "number",
+                    "quantity": "string",
+                    "table": "string"
+                },
+                "required": ["name", "table"]
+            }
+        },
+        "required": ["name", "total-weight", "rows"],
+        "required": ["name", "columns"]
+    }
+}

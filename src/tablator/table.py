@@ -44,16 +44,16 @@ def generate(table_name, num_rolls=1):
     table = load_table(table_name)
 
     values = list()
-    if table['type'] == 'items':
+    if 'rows' in table:
         for i in range(num_rolls):
-            item_name = lookup_items(table)
+            item_name = lookup_rows(table)
             values.append(item_name)
-    elif table['type'] == 'tables':
+    elif 'columns' in table:
         for i in range(num_rolls):
-            item_list = lookup_tables(table)
+            item_list = lookup_columns(table)
             values.extend(item_list)
     else:
-        raise ValueError('Unknown table type: ' + table['type'])
+        raise ValueError('Malformed table: missing rows or columns key')
 
     return values
 
@@ -108,19 +108,19 @@ def load_table(table_name):
     return table
 
 
-def lookup_items(table):
+def lookup_rows(table):
     """
-    Do a lookup in an 'items' table, return the result.
+    Do a lookup in an row table, return the result.
     Returns a string.
     Raises ValueError.
     """
-    trace('lookup_item')
-    debug('lookup_item', table['name'], table['total-weight'],
+    trace('lookup_rows')
+    debug('lookup_rows', table['name'], table['total-weight'],
           len(table['rows']))
     item = random_row(table)
     if 'table' in item:
         subtable = load_table(item['table'])
-        return lookup_items(subtable)
+        return lookup_rows(subtable)
     item_name = item['name']
     subitem = None
     quantity = None
@@ -128,10 +128,10 @@ def lookup_items(table):
     if 'subtable' in item:
         debug('roll on subtable', item['subtable'])
         subtable = load_table(item['subtable'])
-        if subtable['type'] == 'items':
-            subitem = lookup_items(subtable)
+        if 'rows' in subtable:
+            subitem = lookup_rows(subtable)
         else:
-            raise ValueError('invalid table type: ' + subtable['type'])
+            raise ValueError('invalid subtable')
         # if len(subitem) == 0:
         #     subitem = None
     if 'quantity' in item:
@@ -153,18 +153,18 @@ def lookup_items(table):
     return item_name
 
 
-def lookup_tables(table):
+def lookup_columns(table):
     """
     The top-level table is a list of tables.
     Roll once on each table in the list.
     Returns a list of item names.
-    Each table item has:
+    Each table column has:
         name: the name of the item or table
         chance: roll less than or equal to this value for item to be generated
         table: if None, use "quantity + name", else roll on table
         quantity: number of items (bunch) or rolls on table
     """
-    trace('lookup_tables')
+    trace('lookup_columns')
     debug('table name', table['name'])
     values = list()
     columns = table['columns']
@@ -184,11 +184,11 @@ def lookup_tables(table):
             for i in range(int(quantity)):
                 debug('rolling on table', table_name)
                 subtable = load_table(table_name)
-                if subtable['type'] == 'items':
-                    item_name = lookup_items(subtable)
+                if 'rows' in subtable:
+                    item_name = lookup_rows(subtable)
                     values.append(item_name)
-                elif subtable['type'] == 'tables':
-                    item_list = lookup_tables(subtable)
+                elif 'columns' in subtable:
+                    item_list = lookup_columns(subtable)
                     values.extend(item_list)
                 else:
                     raise ValueError('invalid table type: ' + subtable['type'])
@@ -202,7 +202,7 @@ def print_plain(table_name):
     trace('print_plain')
     table = load_table(table_name)
     index = 1
-    if table['type'] == 'items':
+    if 'rows' in table:
         # A table of items
         debug('print "items" table')
         dice = str(table['total-weight'])
@@ -221,7 +221,7 @@ def print_plain(table_name):
             index += wt
             print(s)
         print()
-    elif table['type'] == 'tables':
+    elif 'columns' in table:
         # A list of tables, roll on each table
         debug('print "tables" table')
         print(table['name'])
@@ -236,7 +236,7 @@ def print_plain(table_name):
         print()
 
     else:
-        debug('unknown table type', table['type'])
+        debug('Malformed table')
 
 
 def random_row(table):

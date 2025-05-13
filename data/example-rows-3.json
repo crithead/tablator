@@ -1,0 +1,22 @@
+{
+  "name": "Table of Variably Weighted Numbers",
+  "total-weight": 10,
+  "rows": [
+    {
+      "weight": 1,
+      "name": "One"
+    },
+    {
+      "weight": 2,
+      "name": "Two"
+    },
+    {
+      "weight": 3,
+      "name": "Three"
+    },
+    {
+      "weight": 4,
+      "name": "Four"
+    }
+  ]
+}

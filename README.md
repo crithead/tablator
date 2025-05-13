@@ -13,71 +13,127 @@ guitar tablature.
 
 The _tablator.py_ script is a reference implementation to show how the
 _tablator_ library is used.  It can be used to roll on tables without the need
-to write another script, unless something more specialized is necessary.
+to write another script, unless something more specialized is desired.
 
 ```
 python3 tablator.py --help
+python3 tablator.py rings wands weapons
 python3 tablator.py lair-a
 python3 tablator.py --number 3 potions
 python3 tablator.py --print scrolls
 python3 tablator.py --data-dir ~/data/pathfinder-encounters dungeon-mid
-python3 tablator.py --config addt.conf magic-item --number 3
+python3 tablator.py -c addt.conf magic-item -n 3
 ```
+
+1. Print usage information.
+2. Roll once on each of the _rings_, _wands_, and _weapons_ tables.
+3. Roll on the "Lair A" table.
+4. Roll three itmes on the "potions" table.
+5. Print the scrolls table to the terminal.
+6. Roll on the "Dungon Mid-level Dungeon Encounters" table in the specified data directory.
+7. Roll four times on the magic items table using the given configuration file.
+
+### Environment Variables
+
+The data directory file is set from `TABLATOR_DATA_DIR` if it is found in the
+environment.
+
+The configuration file is set from `TABLATOR_CONFIG_FILE` if it is found in the
+environment.
+
+Settings on the command line override the values from the environment.
 
 ### Configuration file
 
 The configuration file provides a set of default values for the same options
-that are set by the command line arguments.  Setting on the command file
-override the values in the configuration file.  The following files are used,
+that are set by the command line arguments. The following files are used,
 in this order, to set configuration defaults.
 
 - `~/.ttrc` -- In the user's home directory
 - `./.ttrc` -- In the current directory
-- `--config _FILE_` -- Anywhere in the host's file system
+- `--config FILE` -- Anywhere in the host's file system
 
 This is an example configuration file.
 
 ```
 # Pathfinder Core
-data-dir = ~/Projects/tablator-data-pathfinder-core
+data-dir = ~/Public/tablator-data/pathfinder-core
 trace = no
 verbose = yes
 ```
 
 Tilde expansion is performed on _data-dir_, but environment variables are not.
 
+Settings on the command line or in the environment override the values in the
+configuration file.
+
+### The Data Directory
+
+The _Data Directory_ is a file system directory where a set of related
+_tablator_ table files are found.
+Table files are JSON or YAML formatted files found in this directory.
+For example, if the command `python3 tablator.py potions` is entered,
+then there must be a correctly formatted file called "potions.json" or
+"potions.yaml" in DATA_DIR. Similarly, if a table row has a subtable or table
+key, then there must be a corresponding table file in DATA_DIR.
+
+In the `tablator` tool, the data diretory is set as a command line argument,
+from the environment variable `TABLATOR_DATA_DIR`, or in the configuration file.
+If not set, it defaults to the current working directory.
+
+In Python the data directory is set thusly:
+
+```python
+tablator.data.set_data_dir('~/data')
+```
+
 ## Table DATA Format
 
 The library is designed to load tables in JSON and YAML format.  The reference
 tables were all done in JSON so that's the format of the examples.
 
-There are three kinds of tables: the _items_ table, the _tables_ table, and the
-_table_list_ table. Each is described in more detail below.
+There are two kinds of tables: the _row_ table and the _column_ table.
 
-### The DATA_DIR
+### Row Table
 
-Every table is a JSON or YAML formatted file found in the data directory.
-For example, if the command `python3 tablator.py potions` is entered,
-then there must be a correctly formatted file called "potions.json" or
-"potions.yaml" in DATA_DIR. Similarly, if a table row has a subtable key,
-then there must be a corresponding table file in DATA_DIR.
+A _row table_ is a single look-up table from which one row is selected at
+random.  Its attributes are:
 
-(how to set the DATA_DIR)
+* __name__ is required, a string
+* __total-weight__ is required, a number
+* __rows__ is required, an array
+* __rows[i].name__ is required, a string
+* __rows[i].weight__ is optional, a number, defaults to 1
+* __rows[i].table__ is optional, a string naming a table
+* __rows[i].subtable__ is optional, a string naming a table
+* __rows[i].quantity__ is optional, a dice expression, defaults to 1
+* __rows[i].units__ is optional, a string, appended to quantity result
 
-```python
-tablator.data.set_data_dir('/tmp/data')
-```
+The top-level __name__ is the table's name or title.
 
-### Items Table
+The __total-weight__ is the sum of the row's weights.
 
-Items table randomly select an item from the table.  If there is an optional
-subtable, then an item is randomly selected from that table.  The name of the
-item in the subtable is included in parentheses after the primary table item.
+The __rows__ is an array of item entries.  Each row entry requires a __name__
+or __table__ and a __weight__.  If __table__ is present, it is the name of a
+from which an item is rolled in place of the __name__ of this item's name.
+If not present, __weight__ is 1.
+If __quantity__ is present, the _dice expression_ is rolled to generate the
+item count which is included as an item attribute.
+If __units__ is present and quantity is greater than one, it is appended to the
+quantity attribute.
+If __subtable__ is present, then an item is randomly selected from that
+table.  The name fo the item from the subtable is included as an attribute in
+parentheses after the primary table item.
+
+If __table__ is present, it replaces the entire item with a result from a
+lookup in another table.  No other row attributes are processed.  This kind of
+_Items Table_ requires only __rows[i].table__ and __rows[i].weight__ keys.
+
+For example, the following table
 
 ```json
 {
-  "name": "Table Name",
-  "type": "items",
+  "name": "Office Supplies",
   "total-weight": 100,
   "rows": [
     {
@@ -100,67 +156,59 @@ item in the subtable is included in parentheses after the primary table item.
 }
 ```
 
-* __name__ is required, a string
-* __type__ is required, the string "items"
-* __total-weight__ is required, a number
-* __rows__ is required, an array
-* __rows[i].name__ is required, a string
-* __rows[i].weight__ is optional, a number, defaults to 1
-* __rows[i].table__ is optional, a string naming a table
-* __rows[i].subtable__ is optional, a string naming a table
-* __rows[i].quantity__ is optional, a dice expression, defaults to 1
-* __rows[i].units__ is optional, a string, appended to quantity result
+can produce output like
 
-If __quantity__ is present, __units__ is appended to the generated quantity.
+```text
+notebook
+ink pens (9, blue)
+printer paper (8 reams)
+```
 
-If __subtable__ is present, it is included in the current item.  Subtables are
-for adding attributes to the item.
-
-If __table__ is present, it replaces the entire item with a result from a
-lookup in another table.  No other row attributes are processed.  This kind of
-_Items Table_ requires only __rows[i].table__ and __rows[i].weight__ keys.
+A row table can be a table of tables where each item is a lookup from another
+table.
 
 ```json
 {
   "name": "Table of Tables",
-  "type": "items",
-  "total-weight": 100,
+  "total-weight": 3,
   "rows": [
-    {
-      "weight": 30,
-      "table": "fruits",
-    },
-    {
-      "weight": 40,
-      "table": "vegetables",
-    },
-    {
-      "weight": 30,
-      "table": "grains",
-    }
+    { "table": "fruits" },
+    { "table": "vegetables" },
+    { "table": "grains" }
   ]
 }
 ```
 
 Note also that weights are relative.
 The above example could have _total-weight_ of 10 and row _weight_ of 3, 4,
-and 3 or 20 and 6, 8, 6 for a d20-based table.
+and 3 for a d10-based table, or 4, 4, 4 for a d12-based table.
 
-### Tables Table
+### Column Table
 
 A list of tables. Roll once on every table (column) in the list.
 
-This table has two modes of operation.  If _table_ is _null_, it may generate
-_quantity_ of _name_.  If _table_ is not _null_, then _quantity_ rolls may be
-made on the _table_.
+* __name__ required, a string
+* __columns__ is required, an array
+* __columns[i].chance__ is optional, a number in 1-100, chance of item occurring
+    on d%, defaults to 100
+* __columns[i].name__ is required, a string, item name (used if table is null)
+* __columns[i].quantity__ is optional, a dice expression, number of rolls on
+    table or number of items, defaults to 1
+* __columns[i].table__ = is optional, a string, roll on this table 'quantity'
+    times, defaults to _null_
 
-For each _column_, it is generated if d% is less than or equal to _chance_ for
-that column.  If the roll fails, the column is skipped.
+The top-level __name__ is the table's name or title.
+
+Each column has a percent __chance__ to occur.  If a d100 roll is less than
+__chance__, the item is present. If the roll fails, the column is skipped.
+
+One of  __name__ or __table__ is required in each column entry.
+If __table__ is present, then __quantity__ rolls are be made on that table.
+ Otherwise, it rolls __quantity__ of __name__.
 
 ```json
 {
   "name": "Table List Name",
-  "type": "tables",
   "columns" : [
     {
       "chance" : 80,
@@ -179,25 +227,18 @@ that column.  If the roll fails, the column is skipped.
       "name": "Thing C",
       "quantity": "1d10x100",
       "table" : null
+   },
+   {
+      "chance" : 20,
+      "name": "Thing D"
    }
  ]
 }
 ```
 
-* __name__ required, a string
-* __type__ is required, the string "tables"
-* __columns__ is required, an array
-* __columns[i].chance__ is optional, a number in 1-100, chance of item occurring
-    on d%, defaults to 100
-* __columns[i].name__ is required, a string, item name (used if table is null)
-* __columns[i].quantity__ is optional, a dice expression, number of rolls on
-    table or number of items, defaults to 1
-* __columns[i].table__ = is optional, a string, roll on this table 'quantity'
-    times, may be _null_
-
 In the above example, there is an 80% chance of generating 2-8 items from
-"table-a", a 15% chance of generating one item from "table-b", and a 50% chance
-of generating 100-1000 of "Thing C".
+"table-a", a 15% chance of generating one item from "table-b", a 50% chance
+of generating 100-1000 of "Thing C", and a 20% chance for one "Thing D".
 
 ### Dice Expression
 
@@ -250,6 +291,6 @@ Optionally install `python-pytest-doc`, `python3-pytest`,
 
 Run the tests with coverage report from the root of the repository.
 
-```
+```shell
 tests/run.sh
 ```

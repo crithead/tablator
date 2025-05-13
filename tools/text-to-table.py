@@ -32,7 +32,7 @@ def msg(*args):
         print(*args)
 
 
-TABLE_TYPES = [ 'items', 'tables' ]
+TABLE_TYPES = [ 'row', 'column' ]
 
 def get_options():
     parser = argparse.ArgumentParser(
@@ -40,8 +40,8 @@ def get_options():
         epilog='  ---  ')
     parser.add_argument('-c', '--csv', action='store_true', default=False,
             help='input files are CSV')
-    parser.add_argument('-t', '--table-type', action='store', default="items",
-            type=str, help='set the table type (default: items)')
+    parser.add_argument('-t', '--table-type', action='store', default="row",
+            type=str, help='set the table type (default: row)')
     parser.add_argument('-n', '--table-name', action='store', default="TABLE NAME",
             type=str, help='set the table name')
     parser.add_argument('-w', '--weights', action='store_true', default=False,
@@ -125,7 +125,6 @@ def lines_to_table(lines, opts):
 
     return {
         "name": opts.table_name,
-        "type": opts.table_type,
         "total-weight": total_weight,
         "rows": rows
     }

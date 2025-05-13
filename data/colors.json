@@ -1,6 +1,5 @@
 {
   "name": "Colors",
-  "type": "items",
   "total-weight": 8,
   "rows": [
     { "name": "red" },
@@ -13,4 +12,3 @@
     { "name": "black" }
   ]
 }
-

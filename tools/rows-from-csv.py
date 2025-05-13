@@ -48,7 +48,6 @@ def read_csv(csv_file):
     rows = list()
     table = {
         'name': os.path.basename(csv_file),
-        'type': 'items',
         'total-weight': 0,
         'rows': rows
     }
@@ -93,8 +92,8 @@ def parse_header(first_line):
         header['max'] = True
     if 'subtable' in items:
         header['subtable'] = True
-    if 'value' in items:
-        header['value'] = True
+    if 'units' in items:
+        header['units'] = True
     if 'quantity' in items:
         header['quantity'] = True
 
@@ -191,4 +190,3 @@ if __name__ == '__main__':
             print("Warning: exit_code is None")
             exit_code = 99
     exit(exit_code)
-

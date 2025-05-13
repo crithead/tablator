@@ -1,6 +1,5 @@
 {
   "name": "Hats",
-  "type": "items",
   "total-weight": 20,
   "rows": [
     { "name": "baseball cap" },
@@ -25,4 +24,3 @@
     { "name": "zucchetto" }
   ]
 }
-
