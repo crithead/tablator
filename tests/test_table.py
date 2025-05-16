@@ -131,20 +131,18 @@ def tables_table():
         'columns': [
             {
                 'chance': 50,
-                'name': 'First Table',
+                'name': 'First Item',
                 'quantity': '1',
             },
             {
                 'chance': 80,
-                'name': 'Second Table',
-                'table': None,
+                'name': 'Second Item',
                 'quantity': '1',
             },
             {
                 'chance': 35,
-                'name': 'Third Table',
+                'table': 'two-row-table',
                 'quantity': '2',
-                'table': 'two-row-table'
             },
         ]
     }
@@ -448,8 +446,8 @@ def test_print_plain_tables_table(capsys, monkeypatch, tables_table):
     assert out == '''\
 Table List
 ----------
- 50% 1 First Table
- 80% 1 Second Table
+ 50% First Item
+ 80% Second Item
  35% 2 Two Row Table
 
 '''

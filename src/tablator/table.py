@@ -204,15 +204,19 @@ def print_plain(table_name):
     index = 1
     if 'rows' in table:
         # A table of items
-        debug('print "items" table')
+        debug('print "rows" table')
         dice = str(table['total-weight'])
         if dice == '100': dice = '%'
         print(' d{}'.format(dice), table['name'], sep='\t')
         print('-----', '-' * len(table['name']), sep='\t')
-        # TODO Include quantity, if present
         for row in table['rows']:
             wt = row['weight'] if 'weight' in row else 1
             row_name = row['name'] if 'name' in row else get_table_name(row['table'])
+            if 'quantity' in row:
+                if 'units' in row:
+                    row_name += ' ({} {})'.format(row['quantity'], row['units'])
+                else:
+                    row_name += ' ({})'.format(row['quantity'])
             s = None
             if wt > 1:
                 s = "{:02d}-{:02d}\t{}".format(index, index + wt - 1, row_name)
@@ -223,16 +227,22 @@ def print_plain(table_name):
         print()
     elif 'columns' in table:
         # A list of tables, roll on each table
-        debug('print "tables" table')
+        debug('print "columns" table')
         print(table['name'])
         print('-' * len(table['name']))
         for column in table['columns']:
             chance = '{0:3d}%'.format(get_chance(column))
-            quantity = column['quantity']
-            name = column['name']
-            if 'table' in column and column['table'] is not None:
+            quantity = column['quantity'] if 'quantity' in column else '1'
+            if 'name' in column:
+                name = column['name']
+            elif 'table' in column and column['table'] is not None:
                 name = get_table_name(column['table'])
-            print(chance, quantity, name) # TODO Format
+            else:
+                raise ValueError('invalid column: no name or table')
+            if quantity == '1':
+                print(chance, name)
+            else:
+                print(chance, quantity, name)
         print()
 
     else:
