@@ -115,19 +115,20 @@ def bad_weight_table():
         'name': 'Bad Weight Row Table',
         'total-weight': 10,
         'rows': [
-            { 'weight': 1, 'name': 'row one' },
-            { 'weight': 3, 'name': 'row two' },
-            { 'weight': 5, 'name': 'row three' },
-            { 'weight': 3, 'name': 'row four' },
-            { 'weight': 1, 'name': 'row five' }
+            { 'weight': 2, 'name': 'row one' },
+            { 'weight': 4, 'name': 'row two' },
+            { 'weight': 8, 'name': 'row three' },
+            { 'weight': 4, 'name': 'row four' },
+            { 'weight': 2, 'name': 'row five' }
         ]
     }
 
 
 @pytest.fixture
-def tables_table():
+def columns_table():
      return {
         'name': 'Table List',
+        'total-weight': 3,
         'columns': [
             {
                 'chance': 50,
@@ -149,9 +150,10 @@ def tables_table():
 
 
 @pytest.fixture
-def tables_table_no_chance():
+def columns_table_no_chance():
      return {
         'name': 'Table List, No Chance',
+        'total-weight': 2,
         'columns': [
             {
                 'name': 'First Table',
@@ -166,9 +168,10 @@ def tables_table_no_chance():
 
 
 @pytest.fixture
-def tables_table_bad_chance():
+def columns_table_bad_chance():
      return {
         'name': 'Table List, Bad Chance',
+        'total-weight': 2,
         'columns': [
             {
                 'name': 'First Table',
@@ -205,14 +208,11 @@ def test_check_weights_default_weights(default_weight_table):
         assert False, f'unexpected exception: {e}'
 
 
-def test_check_weights_non_weighted(capsys, tables_table):
-    tablator.logger.set(True, False)    # enable debug output
-    tablator.table.check_weights(tables_table)
-    tablator.logger.set(False, False)   # disable debug output
-    out, err = capsys.readouterr()
-    #with capsys.disabled():
-    #    print('out', out, sep='\n')
-    assert out.startswith('--- not a weighted table')
+def test_check_weights_columns(capsys, columns_table):
+    try:
+        tablator.table.check_weights(columns_table)
+    except ValueError as e:
+        assert False
 
 
 def test_check_weights_bad_weights(bad_weight_table):
@@ -237,7 +237,7 @@ def test_generate_row_table(monkeypatch, one_row_table):
     assert values == ['only row', 'only row', 'only row']
 
 
-def test_generate_tables_table(monkeypatch, one_row_table):
+def test_generate_columns_table(monkeypatch, one_row_table):
     def mock_load_table(table_name):
         return one_row_table
 
@@ -250,26 +250,26 @@ def test_generate_tables_table(monkeypatch, one_row_table):
     assert values == ['only row', 'only row', 'only row']
 
 
-def test_get_chance_not_present(tables_table_no_chance):
-    chance = tablator.table.get_chance(tables_table_no_chance['columns'][0])
+def test_get_chance_not_present(columns_table_no_chance):
+    chance = tablator.table.get_chance(columns_table_no_chance['columns'][0])
     assert chance == 100
-    chance = tablator.table.get_chance(tables_table_no_chance['columns'][1])
+    chance = tablator.table.get_chance(columns_table_no_chance['columns'][1])
     assert chance == 100
 
 
-def test_get_chance_invalid_chance(tables_table_bad_chance):
+def test_get_chance_invalid_chance(columns_table_bad_chance):
     with pytest.raises(ValueError, match='Column chance out of range: -99'):
-        chance = tablator.table.get_chance(tables_table_bad_chance['columns'][0])
+        chance = tablator.table.get_chance(columns_table_bad_chance['columns'][0])
     with pytest.raises(ValueError, match='Column chance out of range: 1234'):
-        chance = tablator.table.get_chance(tables_table_bad_chance['columns'][1])
+        chance = tablator.table.get_chance(columns_table_bad_chance['columns'][1])
 
 
-def test_get_chance_ok(tables_table):
-    chance = tablator.table.get_chance(tables_table['columns'][0])
+def test_get_chance_ok(columns_table):
+    chance = tablator.table.get_chance(columns_table['columns'][0])
     assert chance == 50
-    chance = tablator.table.get_chance(tables_table['columns'][1])
+    chance = tablator.table.get_chance(columns_table['columns'][1])
     assert chance == 80
-    chance = tablator.table.get_chance(tables_table['columns'][2])
+    chance = tablator.table.get_chance(columns_table['columns'][2])
     assert chance == 35
 
 
@@ -426,7 +426,7 @@ def test_print_plain_row_table(capsys, monkeypatch, one_row_table):
 
 # * Mock load_table('table-name')
 # * Capture sys.stdout and compare
-def test_print_plain_tables_table(capsys, monkeypatch, tables_table):
+def test_print_plain_columns_table(capsys, monkeypatch, columns_table):
 
     def mock_get_table_name(table_name):
         if table_name == 'two-row-table':
@@ -435,7 +435,7 @@ def test_print_plain_tables_table(capsys, monkeypatch, tables_table):
             return 'Unknown'
 
     def mock_load_table(table_name):
-        return tables_table
+        return columns_table
 
     monkeypatch.setattr(tablator.table, "get_table_name", mock_get_table_name)
     monkeypatch.setattr(tablator.table, "load_table", mock_load_table)

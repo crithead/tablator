@@ -1,0 +1,14 @@
+{
+  "name": "Columns Table of Tables (N of Each)",
+  "total-weight": 2,
+  "columns": [
+    {
+      "table": "hats",
+      "quantity": "2d3"
+    },
+    {
+      "table": "colors",
+      "quantity": "2d3"
+    }
+  ]
+}

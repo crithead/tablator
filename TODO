@@ -3,6 +3,8 @@
 List of things that needs to be added, changed or fixed.
 
 1. Finish unit tests
+2. Fix config logic
+3. Add env vars
 
 ## Finish Unit Tests
 
@@ -21,6 +23,26 @@ def random_row(table):                      ok
 def roll_quantity(quantity):                ok
 ```
 
-## Unit tests for tabltaor CLI tool
+## Unit tests for tablator CLI tool
 
 See `tests/someday_test_tablator.py`
+
+## Fix Config Logic
+
+The priority configuration parameters should be read is:
+
+1. Command line
+2. Environment variables
+3. Config file, the first one it finds in args, ".", or "~"
+4. Defaults
+
+Optionally, remove the config file and just use the command line
+parameters, environment variables, or defaults.
+
+## Add Env Vars
+
+- TABLATOR_DATA_DIR = "string"
+- TABLATOR_TRACE = "on,off,true,false,1,0"
+- TABLATOR_VERBOSE = "on,off,true,false,1,0"
+
+

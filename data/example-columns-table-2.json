@@ -1,14 +1,12 @@
 {
-  "name": "Table of Tables",
-  "total-weight": 100,
-  "rows": [
+  "name": "Columns Table (One of Each)",
+  "total-weight": 2,
+  "columns": [
     {
-      "weight": 50,
-      "table": "example-items"
+      "table": "hats"
     },
     {
-      "weight": 50,
-      "table": "example-items"
+      "table": "colors"
     }
   ]
 }

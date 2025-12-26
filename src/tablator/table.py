@@ -18,9 +18,12 @@ def check_weights(table):
     Raise ValueError if not equal
     """
     trace('check_weights')
-    if 'total-weight' in table:
-        total_weight = table['total-weight']
-        weight_total = 0
+    if 'total-weight' not in table:
+        raise ValueError(f'{table} has no "total-weight" key')
+
+    total_weight = table['total-weight']
+    weight_total = 0
+    if 'rows' in table:
         for row in table['rows']:
             row_weight = row['weight'] if 'weight' in row else 1
             weight_total += row_weight
@@ -28,8 +31,12 @@ def check_weights(table):
         if total_weight != weight_total:
             raise ValueError("{}: row weights don't add up: {} of {}".
                              format(table['name'], weight_total, total_weight))
+    elif 'columns' in table:
+        weight_total = len(table['columns'])
+        if total_weight != weight_total:
+            raise ValueError(f"{table}: columns count doesn't add up: {weight_total} of {total_weight}")
     else:
-        debug('not a weighted table', table['name'])
+        raise ValueError(f'Invalid table: {table}')
 
 
 def generate(table_name, num_rolls=1):
@@ -53,7 +60,7 @@ def generate(table_name, num_rolls=1):
             item_list = lookup_columns(table)
             values.extend(item_list)
     else:
-        raise ValueError('Malformed table: missing rows or columns key')
+        raise ValueError('Invalid table: missing rows or columns key')
 
     return values
 
@@ -73,7 +80,7 @@ def get_chance(column):
         if 0 < chance and chance <= 100:
             value = chance
         else:
-            raise ValueError('Column chance out of range: {}'.format(chance))
+            raise ValueError(f'Column chance out of range: {chance}')
     return value
 
 
@@ -130,15 +137,21 @@ def lookup_rows(table):
         subtable = load_table(item['subtable'])
         if 'rows' in subtable:
             subitem = lookup_rows(subtable)
+        elif 'columns' in subtable:
+            subitem = lookup_columns(subtable)
+            if len(subitem) > 1:
+                subitem = ', '.join(subitem)
+            else:
+                subitem = subitem[0]
         else:
-            raise ValueError('invalid subtable')
+            raise ValueError(f"Invalid subtable: {item['subtable']}")
         # if len(subitem) == 0:
         #     subitem = None
     if 'quantity' in item:
         debug('roll quantity', item['quantity'])
         quantity = roll_quantity(item['quantity'])
         if 'units' in item:
-            quantity = '{} {}'.format(quantity, item['units'])
+            quantity = f'{quantity} {item["units"]}'
         if quantity == '1':
             quantity = None
 
@@ -172,14 +185,13 @@ def lookup_columns(table):
         chance = get_chance(column)
         roll = randint(1, 100)
         if roll > chance:
-            debug('skip', column['name'], roll, 'vs', column['chance'])
+            if 'name' in column:
+                debug('skip', column['name'], roll, 'vs', column['chance'])
+            else:
+                debug('skip', column['table'], roll, 'vs', column['chance'])
             continue    # failed chance roll
-        if column['table'] is None:
-            quantity = roll_quantity(column['quantity'])
-            name = column['name']
-            values.append('{} {}'.format(quantity, name))
-        else:
-            quantity = roll_quantity(column['quantity'])
+        if 'table' in column:
+            quantity = roll_quantity(column['quantity']) if 'quantity' in column else 1
             table_name = column['table']
             for i in range(int(quantity)):
                 debug('rolling on table', table_name)
@@ -192,6 +204,10 @@ def lookup_columns(table):
                     values.extend(item_list)
                 else:
                     raise ValueError('invalid table type: ' + subtable['type'])
+        else:  # use name 
+            quantity = roll_quantity(column['quantity'])
+            name = column['name']
+            values.append('{} {}'.format(quantity, name))
     return values
 
 

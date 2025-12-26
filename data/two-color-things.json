@@ -1,0 +1,30 @@
+{
+  "name": "Two Color Things",
+  "total-weight": 6,
+  "rows": [
+    {
+       "name": "baseball cap",
+       "subtable": "two-colors"
+    },
+    {
+       "name": "bowling shoes",
+       "subtable": "two-colors"
+    },
+    {
+       "name": "dress shirt",
+       "subtable": "two-colors"
+    },
+    {
+       "name": "necktie",
+       "subtable": "two-colors"
+    },
+    {
+       "name": "golf pants",
+       "subtable": "two-colors"
+    },
+    {
+       "name": "holiday sweater",
+       "subtable": "two-colors"
+    }
+  ]
+}

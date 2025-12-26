@@ -1,0 +1,8 @@
+{
+  "name": "Two Colors",
+  "total-weight": 2,
+  "columns": [
+    { "table": "colors" },
+    { "table": "colors" }
+  ]
+}

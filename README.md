@@ -113,21 +113,29 @@ The top-level __name__ is the table's name or title.
 
 The __total-weight__ is the sum of the row's weights.
 
-The __rows__ is an array of item entries.  Each row entry requires a __name__
-or __table__ and a __weight__.  If __table__ is present, it is the name of a
-from which an item is rolled in place of the __name__ of this item's name.
+The __rows__ array is a list of item entries.  Each row entry requires a
+__name__ or __table__ and a __weight__.  If __table__ is present, it is the
+name of a table from which an item is selected in place of the __name__ of
+this item's name.
+
 If not present, __weight__ is 1.
+
+An item _attribute_ is included in parentheses after the name of the item in
+the output.
+
 If __quantity__ is present, the _dice expression_ is rolled to generate the
 item count which is included as an item attribute.
+
 If __units__ is present and quantity is greater than one, it is appended to the
 quantity attribute.
+
 If __subtable__ is present, then an item is randomly selected from that
-table.  The name fo the item from the subtable is included as an attribute in
-parentheses after the primary table item.
+table and included as an attribute.
 
 If __table__ is present, it replaces the entire item with a result from a
-lookup in another table.  No other row attributes are processed.  This kind of
-_Items Table_ requires only __rows[i].table__ and __rows[i].weight__ keys.
+lookup from another table.  All other row attributes (quantity, units, subtable,
+name) are ignored.  This kind of _Items Table_ requires only __rows[i].table__
+and __rows[i].weight__ keys.
 
 For example, the following table
 
@@ -188,9 +196,9 @@ and 3 for a d10-based table, or 4, 4, 4 for a d12-based table.
 A list of tables. Roll once on every table (column) in the list.
 
 * __name__ required, a string
+* __total-weight__ required, a number
 * __columns__ is required, an array
-* __columns[i].chance__ is optional, a number in 1-100, chance of item occurring
-    on d%, defaults to 100
+* __columns[i].chance__ is optional, a number
 * __columns[i].name__ is required, a string, item name (used if table is null)
 * __columns[i].quantity__ is optional, a dice expression, number of rolls on
     table or number of items, defaults to 1
@@ -199,12 +207,19 @@ A list of tables. Roll once on every table (column) in the list.
 
 The top-level __name__ is the table's name or title.
 
-Each column has a percent __chance__ to occur.  If a d100 roll is less than
-__chance__, the item is present. If the roll fails, the column is skipped.
+The __total-weight__ is the number of coumn entries.
+
+Each column has a percent __chance__ to occur.  It is an integer in 1-100 that
+represents the chance of item occurring on d%.  It defaults to 100.
+If a d100 roll is less than or equal to __chance__, the item is present.
+If the roll fails, the column is skipped.
+
+If __quantity__ is present, then the dice expression is used to generate a
+number of __name__ items or rolls on __table__.
 
 One of  __name__ or __table__ is required in each column entry.
-If __table__ is present, then __quantity__ rolls are be made on that table.
- Otherwise, it rolls __quantity__ of __name__.
+If __table__ is present, then __name__ is ignored and __quantity__ rolls are
+made on that table.
 
 ```json
 {
@@ -212,21 +227,17 @@ If __table__ is present, then __quantity__ rolls are be made on that table.
   "columns" : [
     {
       "chance" : 80,
-      "name": "Thing A",
-      "quantity": "2d4",
-      "table" : "table-a"
+      "table" : "table-a",
+      "quantity": "2d4"
    },
    {
       "chance" : 15,
-      "name": "Thing B",
-      "quantity": "1",
-      "table" : "table-b"
+      "table" : "table-b",
    },
    {
       "chance" : 50,
       "name": "Thing C",
-      "quantity": "1d10x100",
-      "table" : null
+      "quantity": "1d10x100"
    },
    {
       "chance" : 20,
@@ -236,25 +247,34 @@ If __table__ is present, then __quantity__ rolls are be made on that table.
 }
 ```
 
-In the above example, there is an 80% chance of generating 2-8 items from
-"table-a", a 15% chance of generating one item from "table-b", a 50% chance
-of generating 100-1000 of "Thing C", and a 20% chance for one "Thing D".
+In the above example, each column is checked.  There is an 80% chance of
+generating 2-8 items from "table-a", a 15% chance of generating one item from
+"table-b", a 50% chance of generating 100-1000 of "Thing C", and a 20% chance
+for one "Thing D".
 
 ### Dice Expression
 
 A _dice expression_ is a short-hand way to define a set of dice to roll with
-adds or multipliers.
+adds or multipliers.  The complete expression is __NdS+AxM__ which says to
+generate __N__ numbers in [1, __S__], add __A__, then multiply by __M__.
+
+__N__ is required if __S__ is present.
+__A__ is optional and defaults to 0.
+__M__ is optional and defaults to 1.
+Minimum expressions are "NdS" or "A".
+
 Input is a string, output is a number (integer).
+
 Here are some examples to illustrate.
 
 ```
 10 -> 10
 1d8 -> 1-8
-3d6 -> 1-6 + 1-6 + 1-6
-1d4-1 -> 1-4 - 1
-2d6+6 -> 1-6 + 1-6 + 6
-10d10x10 -> (1-10 + ... + 1-10) x 10
-2d4+2x10 -> (1-4 + 1-4 + 2) x 10
+3d6 -> 1-6 + 1-6 + 1-6               = 3-18
+1d4-1 -> 1-4 - 1                     = 0-3
+2d6+6 -> 1-6 + 1-6 + 6               = 13-18
+10d10x10 -> (1-10 + ... + 1-10) x 10 = 100-1000
+2d4+2x10 -> (1-4 + 1-4 + 2) x 10     = 40-100
 ```
 
 ## Clone & Install
@@ -294,3 +314,4 @@ Run the tests with coverage report from the root of the repository.
 ```shell
 tests/run.sh
 ```
+

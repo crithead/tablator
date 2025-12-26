@@ -1,40 +1,36 @@
 {
-  "name": "Example Table List Table",
+  "name": "Example Columns Table",
+  "total-weight": 6,
   "columns": [
     {
-      "name": "red",
+      "name": "Red",
       "chance": 75,
-      "table": null,
       "quantity": "2d6-2"
     },
     {
-      "name": "green",
+      "name": "Green",
       "chance": 75,
-      "table": null,
       "quantity": "1d10"
     },
     {
-      "name": "blue",
+      "name": "Blue",
       "chance": 75,
-      "table": null,
-      "quantity": "2d4+2"
+      "quantity": "2d4+2",
+      "units": "gumdrops"
     },
     {
-      "name": "cyan",
+      "table": "colors",
       "chance": 45,
-      "table": "example-rows",
       "quantity": "1d6"
     },
     {
-      "name": "magenta",
+      "table": "colors",
       "chance": 55,
-      "table": "example-rows",
       "quantity": "1d2x10"
     },
     {
-      "name": "yellow",
+      "name": "Yellow",
       "chance": 50,
-      "table": "example-columns-table",
       "quantity": "1"
     }
   ]
