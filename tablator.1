@@ -1,13 +1,13 @@
-.TH TABLATOR 1 "January 24, 2025" "Game Tools"
+.TH TABLATOR 1 "January 26, 2025" "Game Tools"
 .SH NAME
 tablator \- prints a random item from a table
 .SH SYNOPSIS
 .nf
-.B tablator [ -c \fICONFIG\fR ] [ -d \fIDATA_DIR\fR ] [ -n \fINUMBER\fR ]
+.B tablator [ -d \fIDATA_DIR\fR | --data-dir \fIDATA_DIR\fR ] [ -n \fINUMBER\fR | --number \fINUMBER\fR ]
      [ -l | --list ] [ -p | --print ] [ -t | --trace ] [ -v | --verbose ]
-     [ tables ... ]
+     [ \fITABLE1\fR \fITABLE2\fR ... ]
 .B tablator [-d \fIDATA_DIR\fR ] [ -l | --list ]
-.B tablator [ -c \fICONFIG\fR ] [ -p | --print ] table
+.B tablator [ -p | --print ] table
 .B tablator [ -h | --help ]
 .fi
 .SH DESCRIPTION
@@ -20,8 +20,8 @@ command line tool.  This page describes the command line tool.
 The \fBtablator\fR tool is both an example of how to use the library and allows
 use of the data sets.  It lists the available tables, prints tables to the
 console, and roll (select a random row) on those tables.  The tools requires a
-data directory, defined directly as a program argument, defined in a
-configuration file, or it falls back to the current working directory.
+data directory, defined directly as a program argument, in the environment,
+or it falls back to the current working directory.
 .PP
 The \fBtablator\fR Python module is a general purpose library for randomly
 selecting results from look-up tables.  Each row in the table has a weight.
@@ -36,9 +36,6 @@ It has nothing to do with guitar tablature.
 .TP
 .BR \-h ", " \-\-help
 Show usage information and exit
-.TP
-.BR \-c " " \fICONFIG\fR ", " \-\-config " " \fICONFIG\fR
-Load configuration from this file
 .TP
 .BR \-d " " \fIDATA_DIR\fR ", " \-\-data-dir " " \fIDATA_DIR\fR
 Set the table data directory
@@ -59,45 +56,20 @@ Enable trace messages
 Enable debug messages
 .SH EXIT STATUS
 Zero if successful, 1 on any error.
-.SH CONFIGURATION
-.PP
-The configuration file is a list of long command line options and values.
-.PP
-Configuration file are loaded in order of (1) \fB~/.ttrc\fR, (2) \fB./.ttrc\fR,
-(3) --config \fIFILE\fR.  Each one overridding values set by prior files.
-Configuration files that don't exist are skipped.
-.PP
-Configuration settings are in the form of "key = value" pairs, one per line.
-Lines beginning with \fB#\fR and blank lines are ignored.
- Recognized keys are:
-.TP
-.BR data-dir
-The data directory to use.  This is the only "required" key in a user's
-configuration file.
-.TP
-.BR verbose
-Prints messages that describe table processing.
-For development and debugging.
-.TP
-.BR trace
-Prints each function name as it is entered.
-For development and debugging.
 .SH ENVIRONMENT
-.TP
-.BR TABLATOR_CONFIG
-The configuration file.  Not used (yet).
-.TP
 .BR TABLATOR_DATA_DIR
 The data directory.
 .SH EXAMPLES
 .nf
 python3 tablator.py --help
+python3 tablator.py --data-dir ~/data/add-dmg --list
+export TABLATOR_DATA_DIR=~/data/add-dmg
 python3 tablator.py lair-a
 python3 tablator.py --number 3 potions
 python3 tablator.py --print scrolls
 python3 tablator.py --data-dir ~/data/pathfinder-encounters dungeon-mid
-python3 tablator.py -c addt.conf magic-item -n 3
-python3 tablator.py -c addt.conf weapons rings scrolls
+python3 tablator.py magic-item -n 3
+python3 tablator.py weapons rings scrolls
 .fi
 .SH BUGS
 Various.

@@ -22,7 +22,7 @@ python3 tablator.py lair-a
 python3 tablator.py --number 3 potions
 python3 tablator.py --print scrolls
 python3 tablator.py --data-dir ~/data/pathfinder-encounters dungeon-mid
-python3 tablator.py -c addt.conf magic-item -n 3
+python3 tablator.py magic-item -n 3
 ```
 
 1. Print usage information.
@@ -31,41 +31,14 @@ python3 tablator.py -c addt.conf magic-item -n 3
 4. Roll three itmes on the "potions" table.
 5. Print the scrolls table to the terminal.
 6. Roll on the "Dungon Mid-level Dungeon Encounters" table in the specified data directory.
-7. Roll four times on the magic items table using the given configuration file.
+7. Roll four times on the magic items table.
 
 ### Environment Variables
 
 The data directory file is set from `TABLATOR_DATA_DIR` if it is found in the
 environment.
 
-The configuration file is set from `TABLATOR_CONFIG_FILE` if it is found in the
-environment.
-
 Settings on the command line override the values from the environment.
-
-### Configuration file
-
-The configuration file provides a set of default values for the same options
-that are set by the command line arguments. The following files are used,
-in this order, to set configuration defaults.
-
-- `~/.ttrc` -- In the user's home directory
-- `./.ttrc` -- In the current directory
-- `--config FILE` -- Anywhere in the host's file system
-
-This is an example configuration file.
-
-```
-# Pathfinder Core
-data-dir = ~/Public/tablator-data/pathfinder-core
-trace = no
-verbose = yes
-```
-
-Tilde expansion is performed on _data-dir_, but environment variables are not.
-
-Settings on the command line or in the environment override the values in the
-configuration file.
 
 ### The Data Directory
 
@@ -78,7 +51,7 @@ then there must be a correctly formatted file called "potions.json" or
 key, then there must be a corresponding table file in DATA_DIR.
 
 In the `tablator` tool, the data diretory is set as a command line argument,
-from the environment variable `TABLATOR_DATA_DIR`, or in the configuration file.
+from the environment variable `TABLATOR_DATA_DIR`.
 If not set, it defaults to the current working directory.
 
 In Python the data directory is set thusly:
@@ -207,7 +180,7 @@ A list of tables. Roll once on every table (column) in the list.
 
 The top-level __name__ is the table's name or title.
 
-The __total-weight__ is the number of coumn entries.
+The __total-weight__ is the number of column entries.
 
 Each column has a percent __chance__ to occur.  It is an integer in 1-100 that
 represents the chance of item occurring on d%.  It defaults to 100.
@@ -224,6 +197,7 @@ made on that table.
 ```json
 {
   "name": "Table List Name",
+  "total-weight": 4,
   "columns" : [
     {
       "chance" : 80,

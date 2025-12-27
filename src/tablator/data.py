@@ -6,12 +6,11 @@ import os
 
 from tablator.logger import debug, trace
 
-# Default data directory when installed
-DEFAULT_DATA_DIR = '/usr/share/tablator-data'
+# Data directory (aka DATA_DIR)
+_data_dir = None
 
-# Data directory (contains table definitions)
-DATA_DIR = DEFAULT_DATA_DIR
-
+# Table Name list cache
+_table_list = None
 
 def is_table(table_name=None):
     """
@@ -21,17 +20,11 @@ def is_table(table_name=None):
     trace('is_table')
     if table_name is None:
         raise ValueError('table_name is None')
+    global _table_list
 
-    for file_name in os.listdir(DATA_DIR):
-        debug('file_name', file_name)
-        if file_name == table_name + '.yaml':
-            debug('found: ', DATA_DIR, '/', file_name)
-            return True
-        if file_name == table_name + '.json':
-            debug('found: ', DATA_DIR + '/' + file_name)
-            return True
-    debug('not found: ', table_name, 'in', DATA_DIR)
-    return False
+    load_table_list()
+
+    return table_name in _table_list
 
 
 def list_tables(*args):
@@ -41,12 +34,8 @@ def list_tables(*args):
     a table.
     """
     trace('list_tables')
-    files = list()
-    for file_name in os.listdir(DATA_DIR):
-        parts = file_name.split('.')
-        if parts[-1] == 'json' or parts[-1] == 'yaml':
-            files.append('.'.join(parts[:-1]))
-    return files
+    load_table_list()
+    return list(_table_list)
 
 
 def load(table_name=None):
@@ -57,19 +46,46 @@ def load(table_name=None):
     if table_name is None:
         raise ValueError('table_name is None')
 
-    table_file = os.path.join(DATA_DIR, table_name + '.json')
+    table_file = os.path.join(_data_dir, table_name + '.json')
     if os.path.exists(table_file):
         import json
         with open(table_file, 'r') as f:
             return json.load(f)
 
-    table_file = os.path.join(DATA_DIR, table_name + '.yaml')
+    table_file = os.path.join(_data_dir, table_name + '.yaml')
     if os.path.exists(table_file):
         import yaml
         with open(table_file, 'r') as f:
             return yaml.load(f, Loader=yaml.SafeLoader)
 
     raise ValueError("Table not found: " + table_name)
+
+
+def load_table_list():
+    """
+    Build of list of table names from files in DATA_DIR with json or yaml
+    extensions.
+    """
+    trace('load_table_list')
+    global _data_dir, _table_list
+
+    # List of Tables already exists, nothing to do
+    if _table_list is not None:
+        return
+
+    # Build the list of tables
+    table_list = list()
+
+    for file_name in os.listdir(_data_dir):
+        debug('file_name', file_name)
+        if file_name.endswith('.json'):
+            table_name = file_name.removesuffix('.json')
+            table_list.append(table_name)
+        elif file_name.endswith('.yaml'):
+            table_name = file_name.removesuffix('.yaml')
+            table_list.append(table_name)
+
+    _table_list = sorted(table_list)
 
 
 def set_data_dir(data_dir):
@@ -81,7 +97,7 @@ def set_data_dir(data_dir):
     data_dir = os.path.realpath(data_dir)
     if os.path.isdir(data_dir):
         debug('Setting DATA_DIR to', data_dir)
-        global DATA_DIR
-        DATA_DIR = data_dir
+        global _data_dir
+        _data_dir = data_dir
     else:
         raise FileNotFoundError(data_dir)

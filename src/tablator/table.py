@@ -127,7 +127,14 @@ def lookup_rows(table):
     item = random_row(table)
     if 'table' in item:
         subtable = load_table(item['table'])
-        return lookup_rows(subtable)
+        if 'rows' in subtable:
+            return lookup_rows(subtable)
+        else:
+            results = lookup_columns(subtable)
+            if len(results) > 1:
+                return ', '.join(sorted(results))
+            else:
+                return results[0]
     item_name = item['name']
     subitem = None
     quantity = None
@@ -140,7 +147,7 @@ def lookup_rows(table):
         elif 'columns' in subtable:
             subitem = lookup_columns(subtable)
             if len(subitem) > 1:
-                subitem = ', '.join(subitem)
+                subitem = ', '.join(sorted(subitem))
             else:
                 subitem = subitem[0]
         else:
@@ -262,7 +269,7 @@ def print_plain(table_name):
         print()
 
     else:
-        debug('Malformed table')
+        debug(f'Invalid Table: {table_name}')
 
 
 def random_row(table):

@@ -9,6 +9,7 @@ def test_is_table_yes(monkeypatch):
         return ['shiny-things.yaml', 'sparkly-things.json']
 
     monkeypatch.setattr(os, "listdir", mock_os_listdir)
+    if data._table_list is not None: data._table_list = None
     assert data.is_table('shiny-things') is True
     assert data.is_table('sparkly-things') is True
 
@@ -18,10 +19,12 @@ def test_is_table_no(monkeypatch):
         return ['shiny-things.yaml', 'sparkly-things.json']
 
     monkeypatch.setattr(os, "listdir", mock_os_listdir)
+    if data._table_list is not None: data._table_list = None
     assert data.is_table('shady-things') is False
 
 
 def test_is_table_no_table_name():
+    if data._table_list is not None: data._table_list = None
     with pytest.raises(ValueError, match=r'table_name is None'):
         data.is_table()
     with pytest.raises(ValueError, match=r'table_name is None'):
@@ -33,6 +36,7 @@ def test_list_tables_no_dir(monkeypatch):
         return list()
 
     monkeypatch.setattr(os, 'listdir', mock_listdir)
+    if data._table_list is not None: data._table_list = None
     table_list = data.list_tables()
     assert len(table_list) == 0
 
@@ -42,6 +46,7 @@ def test_list_tables_empty(monkeypatch):
         return list()
 
     monkeypatch.setattr(os, 'listdir', mock_listdir)
+    if data._table_list is not None: data._table_list = None
     table_list = data.list_tables()
     assert len(table_list) == 0
 
@@ -51,6 +56,7 @@ def test_list_tables_1(monkeypatch):
         return [ 'table-one.json', 'table-two.yaml' ]
 
     monkeypatch.setattr(os, 'listdir', mock_listdir)
+    if data._table_list is not None: data._table_list = None
     tables = data.list_tables()
     assert tables == [ 'table-one', 'table-two' ]
 
@@ -61,18 +67,19 @@ def test_load_table_name_is_none():
 
 
 def test_load_table_name_doesnt_exist():
+    data._data_dir = os.path.realpath(os.path.join('.', 'tests'))
     with pytest.raises(ValueError, match='Table not found: not-a-table'):
         data.load('not-a-table')
 
 
 def test_load_json_table():
-    data.DATA_DIR = os.path.realpath(os.path.join('.', 'tests'))
+    data._data_dir = os.path.realpath(os.path.join('.', 'tests'))
     table = data.load('table-j')
     print(table)
 
 
 def test_load_yaml_table():
-    data.DATA_DIR = os.path.realpath(os.path.join('.', 'tests'))
+    data._data_dir = os.path.realpath(os.path.join('.', 'tests'))
     table = data.load('table-y')
     print(table)
 
@@ -80,7 +87,7 @@ def test_load_yaml_table():
 def test_set_data_dir_exists():
     this_dir = os.path.realpath('.')
     data.set_data_dir('.')
-    assert data.DATA_DIR == this_dir
+    assert data._data_dir == this_dir
 
 
 def test_set_data_dir_doesnt_exist():

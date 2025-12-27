@@ -25,8 +25,7 @@
                     "subtable": "string",
                     "table": "string"
                 },
-                "required": ["name"],
-                "required": ["table"]
+                "required": ["name", "table"]
             }
         },
         "columns": {
@@ -38,12 +37,13 @@
                     "name": "string",
                     "chance": "number",
                     "quantity": "string",
+                    "units": "string",
                     "table": "string"
                 },
                 "required": ["name", "table"]
             }
         },
         "required": ["name", "total-weight", "rows"],
-        "required": ["name", "columns"]
+        "required": ["name", "total-weight", "columns"]
     }
 }
