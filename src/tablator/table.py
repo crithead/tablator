@@ -53,8 +53,8 @@ def generate(table_name, num_rolls=1):
     values = list()
     if 'rows' in table:
         for i in range(num_rolls):
-            item_name = lookup_rows(table)
-            values.append(item_name)
+            item_list = lookup_rows(table)
+            values.extend(item_list)
     elif 'columns' in table:
         for i in range(num_rolls):
             item_list = lookup_columns(table)
@@ -118,7 +118,7 @@ def load_table(table_name):
 def lookup_rows(table):
     """
     Do a lookup in an row table, return the result.
-    Returns a string.
+    Returns a list of string.
     Raises ValueError.
     """
     trace('lookup_rows')
@@ -129,16 +129,12 @@ def lookup_rows(table):
         subtable = load_table(item['table'])
         if 'rows' in subtable:
             return lookup_rows(subtable)
+        elif 'columns' in subtable:
+            return lookup_columns(subtable)
         else:
-            results = lookup_columns(subtable)
-            if len(results) > 1:
-                return ', '.join(sorted(results))
-            else:
-                return results[0]
+            raise ValueError(f"Invalid Table: {subtable['name']}")
     item_name = item['name']
     subitem = None
-    quantity = None
-    units = None
     if 'subtable' in item:
         debug('roll on subtable', item['subtable'])
         subtable = load_table(item['subtable'])
@@ -146,14 +142,14 @@ def lookup_rows(table):
             subitem = lookup_rows(subtable)
         elif 'columns' in subtable:
             subitem = lookup_columns(subtable)
-            if len(subitem) > 1:
-                subitem = ', '.join(sorted(subitem))
-            else:
-                subitem = subitem[0]
         else:
             raise ValueError(f"Invalid subtable: {item['subtable']}")
-        # if len(subitem) == 0:
-        #     subitem = None
+        if len(subitem) > 1:
+            subitem = ', '.join(sorted(subitem))
+        else:
+            subitem = subitem[0]
+    quantity = None
+    units = None
     if 'quantity' in item:
         debug('roll quantity', item['quantity'])
         quantity = roll_quantity(item['quantity'])
@@ -170,7 +166,10 @@ def lookup_rows(table):
         item_name = '{} ({})'.format(item['name'], quantity)
     else:
         item_name = '{}'.format(item['name'])
-    return item_name
+    values = list()
+    values.append(item_name)
+    #if values is None: import pdb; pdb.set_trace()
+    return values
 
 
 def lookup_columns(table):
@@ -198,23 +197,26 @@ def lookup_columns(table):
                 debug('skip', column['table'], roll, 'vs', column['chance'])
             continue    # failed chance roll
         if 'table' in column:
-            quantity = roll_quantity(column['quantity']) if 'quantity' in column else 1
+            quantity = roll_quantity(column['quantity']) if 'quantity' in column else '1'
             table_name = column['table']
             for i in range(int(quantity)):
                 debug('rolling on table', table_name)
                 subtable = load_table(table_name)
                 if 'rows' in subtable:
-                    item_name = lookup_rows(subtable)
-                    values.append(item_name)
+                    item_list = lookup_rows(subtable)
+                    values.extend(item_list)
                 elif 'columns' in subtable:
                     item_list = lookup_columns(subtable)
                     values.extend(item_list)
                 else:
                     raise ValueError('invalid table type: ' + subtable['type'])
-        else:  # use name 
-            quantity = roll_quantity(column['quantity'])
+        else:  # use name
+            quantity = roll_quantity(column['quantity']) if 'quantity' in column else '1'
             name = column['name']
-            values.append('{} {}'.format(quantity, name))
+            if quantity == '1':
+                values.append(name)
+            else:
+                values.append('{} {}'.format(quantity, name))
     return values
 
 

@@ -84,7 +84,7 @@ if __name__ == '__main__':
             print()
             exit_code = 0
 
-        else:
+        else:  # do table lookups
             exit_code = 1
             for table_name in args.tables:
                 if args.print:

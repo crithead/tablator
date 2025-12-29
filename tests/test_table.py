@@ -330,7 +330,8 @@ def test_lookup_rows_simple_lookup(monkeypatch, one_row_table):
 
     monkeypatch.setattr(tablator.table, 'random_row', mock_random_row)
     row_name = tablator.table.lookup_rows(one_row_table)
-    assert row_name == 'fake row'
+    assert len(row_name) == 1
+    assert row_name == ['fake row']
 
 
 def test_lookup_rows_quantity(monkeypatch, one_row_table):
@@ -339,7 +340,8 @@ def test_lookup_rows_quantity(monkeypatch, one_row_table):
 
     monkeypatch.setattr(tablator.table, 'random_row', mock_random_row)
     row_name = tablator.table.lookup_rows(one_row_table)
-    assert row_name == 'fake row (10)'
+    assert len(row_name) == 1
+    assert row_name == ['fake row (10)']
 
 
 def test_lookup_rows_subtable(monkeypatch, one_subtable_table, one_row_table):
@@ -356,7 +358,8 @@ def test_lookup_rows_subtable(monkeypatch, one_subtable_table, one_row_table):
     monkeypatch.setattr(tablator.table, 'random_row', mock_random_row)
     monkeypatch.setattr(tablator.table, 'load_table', mock_load_table)
     row_name = tablator.table.lookup_rows(one_subtable_table)
-    assert row_name == 'only subtable row (only row)'
+    assert len(row_name) == 1
+    assert row_name == ['only subtable row (only row)']
 
 
 def test_lookup_rows_subtable_quantity(monkeypatch, one_row_table,
@@ -374,7 +377,8 @@ def test_lookup_rows_subtable_quantity(monkeypatch, one_row_table,
     monkeypatch.setattr(tablator.table, 'random_row', mock_random_row)
     monkeypatch.setattr(tablator.table, 'load_table', mock_load_table)
     row_name = tablator.table.lookup_rows(one_subtable_quantity_table)
-    assert row_name == 'only subtable row (only row, 20)'
+    assert len(row_name) == 1
+    assert row_name == ['only subtable row (only row, 20)']
 
 
 def test_lookup_rows_subtable_quantity_units(monkeypatch, one_row_table,
@@ -392,7 +396,8 @@ def test_lookup_rows_subtable_quantity_units(monkeypatch, one_row_table,
     monkeypatch.setattr(tablator.table, 'random_row', mock_random_row)
     monkeypatch.setattr(tablator.table, 'load_table', mock_load_table)
     row_name = tablator.table.lookup_rows(one_subtable_quantity_units_table)
-    assert row_name == 'only subtable row (only row, 1000 widgets)'
+    assert len(row_name) == 1
+    assert row_name == ['only subtable row (only row, 1000 widgets)']
 
 
 def test_lookup_columns_table():
